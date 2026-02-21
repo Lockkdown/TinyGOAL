@@ -1,2 +1,33 @@
 docs
 .windsurf
+
+# dependencies
+node_modules
+.pnpm-store
+
+# Next.js
+.next
+out
+build
+
+# env files (contains credentials — never commit)
+.env
+.env.local
+.env.*.local
+
+# debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Prisma
+prisma/migrations/*.db
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
