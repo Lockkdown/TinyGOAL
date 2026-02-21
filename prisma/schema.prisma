@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  name       String?
+  password   String
+  avatar     String?
+  timezone   String   @default("Asia/Ho_Chi_Minh")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  tasks      Task[]
+  dailyPlans DailyPlan[]
+
+  @@map("users")
+}
+
+model Task {
+  id          String     @id @default(cuid())
+  title       String
+  description String?
+  status      TaskStatus @default(BACKLOG)
+  priority    Int        @default(0)
+  dueDate     DateTime?
+  completedAt DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  userId     String
+  categoryId String?
+  parentId   String?
+
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category      Category?       @relation(fields: [categoryId], references: [id])
+  parent        Task?           @relation("SubTasks", fields: [parentId], references: [id])
+  subTasks      Task[]          @relation("SubTasks")
+  tags          TaskTag[]
+  dailyPlanItems DailyPlanItem[]
+
+  @@index([userId, status])
+  @@index([userId, dueDate])
+  @@map("tasks")
+}
+
+enum TaskStatus {
+  BACKLOG
+  TODAY
+  IN_PROGRESS
+  DONE
+  CANCELLED
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  color     String?
+  icon      String?
+  createdAt DateTime @default(now())
+
+  tasks Task[]
+
+  @@map("categories")
+}
+
+model Tag {
+  id    String  @id @default(cuid())
+  name  String  @unique
+  color String?
+
+  tasks TaskTag[]
+
+  @@map("tags")
+}
+
+model TaskTag {
+  taskId String
+  tagId  String
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([taskId, tagId])
+  @@map("task_tags")
+}
+
+model DailyPlan {
+  id        String   @id @default(cuid())
+  date      DateTime @db.Date
+  note      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items  DailyPlanItem[]
+
+  @@unique([userId, date])
+  @@map("daily_plans")
+}
+
+model DailyPlanItem {
+  id    String @id @default(cuid())
+  order Int
+
+  dailyPlanId String
+  taskId      String
+
+  dailyPlan DailyPlan @relation(fields: [dailyPlanId], references: [id], onDelete: Cascade)
+  task      Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@unique([dailyPlanId, taskId])
+  @@map("daily_plan_items")
+}
