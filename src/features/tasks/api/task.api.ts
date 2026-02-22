@@ -4,7 +4,8 @@ import type { ApiResponse } from "@/shared/types"
 async function handleResponse<T>(res: Response): Promise<T> {
   const json: ApiResponse<T> = await res.json()
   if (json.error) throw new Error(json.error)
-  return json.data as T
+  if (json.data === null) throw new Error("No data returned")
+  return json.data
 }
 
 export async function fetchTasks(): Promise<Task[]> {

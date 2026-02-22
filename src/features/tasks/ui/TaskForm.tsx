@@ -11,14 +11,17 @@ import { DatePicker } from "@/shared/ui/date-picker"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/ui/dialog"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/shared/ui/form"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select"
+import { TASK_STATUS_VALUES } from "@/entities/task"
 import type { Task, CreateTaskInput, UpdateTaskInput } from "@/entities/task"
-import { TASK_STATUS_LABELS, TASK_PRIORITY_LABELS } from "@/shared/config/constants"
+import { MAX_TITLE_LENGTH, MAX_DESCRIPTION_LENGTH, TASK_STATUS_LABELS, TASK_PRIORITY_LABELS } from "@/shared/config/constants"
+
+const MAX_PRIORITY = 3
 
 const taskFormSchema = z.object({
-  title: z.string().min(1, "Title is required").max(200),
-  description: z.string().max(2000).optional(),
-  status: z.enum(["BACKLOG", "TODAY", "IN_PROGRESS", "DONE", "CANCELLED"]),
-  priority: z.coerce.number().int().min(0).max(3),
+  title: z.string().min(1, "Title is required").max(MAX_TITLE_LENGTH),
+  description: z.string().max(MAX_DESCRIPTION_LENGTH).optional(),
+  status: z.enum(TASK_STATUS_VALUES),
+  priority: z.coerce.number().int().min(0).max(MAX_PRIORITY),
   dueDate: z.string().optional(),
 })
 

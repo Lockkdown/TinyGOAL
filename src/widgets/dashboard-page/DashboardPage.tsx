@@ -9,6 +9,10 @@ import { TaskBoard } from "@/widgets/task-board"
 export function DashboardPage() {
   const { data: session } = useSession()
 
+  function handleSignOut(): void {
+    signOut({ callbackUrl: "/login" })
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-background/95 backdrop-blur-sm sticky top-0 z-10">
@@ -21,7 +25,7 @@ export function DashboardPage() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => signOut({ callbackUrl: "/login" })}
+              onClick={handleSignOut}
               className="gap-2"
             >
               <LogOut className="h-4 w-4" />

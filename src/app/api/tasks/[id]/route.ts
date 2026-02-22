@@ -2,13 +2,15 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { auth } from "@/shared/lib/auth"
 import { prisma } from "@/shared/lib/prisma"
+import { MAX_TITLE_LENGTH, MAX_DESCRIPTION_LENGTH } from "@/shared/config/constants"
 import type { ApiResponse } from "@/shared/types"
+import { TASK_STATUS_VALUES } from "@/entities/task"
 import type { Task } from "@/entities/task"
 
 const updateTaskSchema = z.object({
-  title: z.string().min(1).max(200).optional(),
-  description: z.string().max(2000).nullable().optional(),
-  status: z.enum(["BACKLOG", "TODAY", "IN_PROGRESS", "DONE", "CANCELLED"]).optional(),
+  title: z.string().min(1).max(MAX_TITLE_LENGTH).optional(),
+  description: z.string().max(MAX_DESCRIPTION_LENGTH).nullable().optional(),
+  status: z.enum(TASK_STATUS_VALUES).optional(),
   priority: z.number().int().optional(),
   dueDate: z.string().datetime({ offset: true }).nullable().optional(),
   completedAt: z.string().datetime({ offset: true }).nullable().optional(),
