@@ -7,6 +7,7 @@ import { z } from "zod"
 import { Button } from "@/shared/ui/button"
 import { Input } from "@/shared/ui/input"
 import { Textarea } from "@/shared/ui/textarea"
+import { DatePicker } from "@/shared/ui/date-picker"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/ui/dialog"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/shared/ui/form"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select"
@@ -45,7 +46,7 @@ export function TaskForm({ open, task, onClose, onSubmit }: TaskFormProps) {
         description: task.description ?? "",
         status: task.status,
         priority: task.priority,
-        dueDate: task.dueDate ? task.dueDate.split("T")[0] : "",
+        dueDate: task.dueDate ?? "",
       })
     } else {
       form.reset({ title: "", description: "", status: "BACKLOG", priority: 0, dueDate: "" })
@@ -148,7 +149,10 @@ export function TaskForm({ open, task, onClose, onSubmit }: TaskFormProps) {
                 <FormItem>
                   <FormLabel>Due Date</FormLabel>
                   <FormControl>
-                    <Input type="date" {...field} />
+                    <DatePicker
+                      value={field.value || undefined}
+                      onChange={(iso) => field.onChange(iso ?? "")}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
