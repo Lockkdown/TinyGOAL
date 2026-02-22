@@ -34,7 +34,7 @@ export function LoginForm() {
     defaultValues: { email: "", password: "" },
   })
 
-  async function handleSubmit(values: LoginFormValues) {
+  async function handleSubmit(values: LoginFormValues): Promise<void> {
     setIsLoading(true)
 
     const result = await signIn("credentials", {
@@ -49,7 +49,7 @@ export function LoginForm() {
       return
     }
 
-    router.push("/")
+    router.push("/dashboard")
     router.refresh()
   }
 
@@ -63,7 +63,7 @@ export function LoginForm() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="" type="email" {...field} />
+                <Input type="email" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -76,7 +76,7 @@ export function LoginForm() {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input placeholder="" type="password" {...field} />
+                <Input type="password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

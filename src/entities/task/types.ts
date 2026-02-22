@@ -1,4 +1,6 @@
-export type TaskStatus = "BACKLOG" | "TODAY" | "IN_PROGRESS" | "DONE" | "CANCELLED"
+import type { TaskStatus } from "@/shared/types"
+
+export type { TaskStatus }
 
 export interface Task {
   id: string

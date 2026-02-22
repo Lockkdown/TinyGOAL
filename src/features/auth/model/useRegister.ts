@@ -40,13 +40,19 @@ export function useRegister(): UseRegisterReturn {
       return
     }
 
-    await signIn("credentials", {
+    const result = await signIn("credentials", {
       email: payload.email,
       password: payload.password,
       redirect: false,
     })
 
-    router.push("/")
+    if (result?.error) {
+      toast.error("Account created but sign-in failed. Please sign in manually.")
+      setIsLoading(false)
+      return
+    }
+
+    router.push("/dashboard")
     router.refresh()
   }
 
