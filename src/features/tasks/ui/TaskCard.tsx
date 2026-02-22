@@ -2,7 +2,7 @@
 
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { CalendarDays, GripVertical } from "lucide-react"
+import { CalendarDays } from "lucide-react"
 import { Card, CardContent } from "@/shared/ui/card"
 import { Badge } from "@/shared/ui/badge"
 import { cn } from "@/shared/lib/utils"
@@ -52,21 +52,15 @@ export function TaskCard({ task, onEdit, onDelete, onStatusChange }: TaskCardPro
   return (
     <div ref={setNodeRef} style={style} {...attributes}>
       <Card
+        {...listeners}
         className={cn(
-          "group cursor-pointer hover:shadow-md transition-all",
+          "group cursor-grab active:cursor-grabbing hover:shadow-md transition-all select-none",
           isDragging && "opacity-50 shadow-lg rotate-1"
         )}
         onClick={() => onEdit(task)}
       >
         <CardContent className="p-3">
           <div className="flex items-start gap-2">
-            <button
-              {...listeners}
-              onClick={(e) => e.stopPropagation()}
-              className="mt-0.5 shrink-0 cursor-grab active:cursor-grabbing text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
-            >
-              <GripVertical className="h-4 w-4" />
-            </button>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium leading-snug line-clamp-2">{task.title}</p>
               <div className="flex items-center gap-2 mt-1.5 flex-wrap">
