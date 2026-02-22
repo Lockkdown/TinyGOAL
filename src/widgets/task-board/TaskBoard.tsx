@@ -19,8 +19,19 @@ import type { Task, TaskStatus, CreateTaskInput, UpdateTaskInput } from "@/entit
 
 const COLUMN_TODAY = "today"
 const COLUMN_BACKLOG = "backlog"
+const COLUMN_DONE = "done"
+const COLUMN_CANCEL = 'cancel'
 const TODAY_STATUSES = new Set(["TODAY", "IN_PROGRESS"])
 const BACKLOG_STATUSES = new Set(["BACKLOG"])
+const DONE_STATUSES = new Set(["DONE"])
+const CANCEL_STATUSES = new Set(["CANCELLED"])
+
+const COLUMN_STATUS_MAP: Record<string, TaskStatus> = {
+  [COLUMN_TODAY]: "TODAY",
+  [COLUMN_BACKLOG]: "BACKLOG",
+  [COLUMN_DONE]: "DONE",
+  [COLUMN_CANCEL]: "CANCELLED",
+}
 
 function TaskOverlay({ task }: { task: Task }) {
   return (
@@ -32,8 +43,8 @@ function TaskOverlay({ task }: { task: Task }) {
 
 function TaskBoardSkeleton() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {[0, 1].map((i) => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {[0, 1, 2, 3].map((i) => (
         <div key={i} className="flex flex-col gap-3">
           <div className="h-4 w-24 bg-muted rounded-md animate-pulse" />
           <div className="flex flex-col gap-2 min-h-[200px] bg-muted/30 rounded-xl p-2">
@@ -67,6 +78,8 @@ export function TaskBoard() {
 
   const todayTasks = tasks.filter((t) => TODAY_STATUSES.has(t.status))
   const backlogTasks = tasks.filter((t) => BACKLOG_STATUSES.has(t.status))
+  const doneTasks = tasks.filter((t) => DONE_STATUSES.has(t.status))
+  const cancelTasks = tasks.filter((t) => CANCEL_STATUSES.has(t.status))
   const activeTask = activeId ? (tasks.find((t) => t.id === activeId) ?? null) : null
 
   function openCreateForm(): void {
@@ -84,7 +97,8 @@ export function TaskBoard() {
   }
 
   function handleDropOnColumn(activeTaskId: string, columnId: string): void {
-    const newStatus: TaskStatus = columnId === COLUMN_TODAY ? "TODAY" : "BACKLOG"
+    const newStatus = COLUMN_STATUS_MAP[columnId]
+    if (!newStatus) return
     const task = tasks.find((t) => t.id === activeTaskId)
     if (task && task.status !== newStatus) {
       editTask(activeTaskId, { status: newStatus })
@@ -112,7 +126,7 @@ export function TaskBoard() {
 
     const activeTaskId = String(active.id)
     const overId = String(over.id)
-    const isOverColumn = overId === COLUMN_TODAY || overId === COLUMN_BACKLOG
+    const isOverColumn = overId in COLUMN_STATUS_MAP
 
     if (isOverColumn) {
       handleDropOnColumn(activeTaskId, overId)
@@ -145,7 +159,7 @@ export function TaskBoard() {
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <TaskColumn
             columnId={COLUMN_TODAY}
             title="Today"
@@ -162,6 +176,24 @@ export function TaskBoard() {
             onEdit={openEditForm}
             onDelete={removeTask}
             emptyLabel="Backlog is empty"
+            onStatusChange={handleStatusChange}
+          />
+          <TaskColumn
+            columnId={COLUMN_DONE}
+            title="Done"
+            tasks={doneTasks}
+            onEdit={openEditForm}
+            onDelete={removeTask}
+            emptyLabel="No completed tasks"
+            onStatusChange={handleStatusChange}
+          />
+          <TaskColumn
+            columnId={COLUMN_CANCEL}
+            title="Cancelled"
+            tasks={cancelTasks}
+            onEdit={openEditForm}
+            onDelete={removeTask}
+            emptyLabel="No cancelled tasks"
             onStatusChange={handleStatusChange}
           />
         </div>
