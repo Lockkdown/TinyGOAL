@@ -90,7 +90,7 @@ export function RegisterForm() {
             <FormItem>
               <FormLabel>Confirm Password</FormLabel>
               <FormControl>
-                <Input placeholder="confirm your passoword" type="password" {...field} />
+                <Input placeholder="Confirm your password" type="password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

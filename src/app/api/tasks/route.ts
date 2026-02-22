@@ -2,13 +2,39 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { auth } from "@/shared/lib/auth"
 import { prisma } from "@/shared/lib/prisma"
+import { MAX_TITLE_LENGTH, MAX_DESCRIPTION_LENGTH } from "@/shared/config/constants"
 import type { ApiResponse } from "@/shared/types"
+import { TASK_STATUS_VALUES } from "@/entities/task"
 import type { Task } from "@/entities/task"
 
+function serializeTask(task: {
+  id: string
+  title: string
+  description: string | null
+  status: string
+  priority: number
+  dueDate: Date | null
+  completedAt: Date | null
+  createdAt: Date
+  updatedAt: Date
+  userId: string
+  categoryId: string | null
+  parentId: string | null
+}): Task {
+  return {
+    ...task,
+    status: task.status as Task["status"],
+    dueDate: task.dueDate?.toISOString() ?? null,
+    completedAt: task.completedAt?.toISOString() ?? null,
+    createdAt: task.createdAt.toISOString(),
+    updatedAt: task.updatedAt.toISOString(),
+  }
+}
+
 const createTaskSchema = z.object({
-  title: z.string().min(1, "Title is required").max(200),
-  description: z.string().max(2000).optional(),
-  status: z.enum(["BACKLOG", "TODAY", "IN_PROGRESS", "DONE", "CANCELLED"]).optional(),
+  title: z.string().min(1, "Title is required").max(MAX_TITLE_LENGTH),
+  description: z.string().max(MAX_DESCRIPTION_LENGTH).optional(),
+  status: z.enum(TASK_STATUS_VALUES).optional(),
   priority: z.number().int().optional(),
   dueDate: z.string().datetime({ offset: true }).nullable().optional(),
 })
@@ -25,13 +51,7 @@ export async function GET(): Promise<NextResponse<ApiResponse<Task[]>>> {
       orderBy: [{ status: "asc" }, { priority: "asc" }, { createdAt: "desc" }],
     })
 
-    const serialized = tasks.map((t) => ({
-      ...t,
-      dueDate: t.dueDate?.toISOString() ?? null,
-      completedAt: t.completedAt?.toISOString() ?? null,
-      createdAt: t.createdAt.toISOString(),
-      updatedAt: t.updatedAt.toISOString(),
-    }))
+    const serialized = tasks.map(serializeTask)
 
     return NextResponse.json({ data: serialized, error: null })
   } catch {
@@ -75,15 +95,7 @@ export async function POST(request: Request): Promise<NextResponse<ApiResponse<T
       },
     })
 
-    const serialized: Task = {
-      ...task,
-      dueDate: task.dueDate?.toISOString() ?? null,
-      completedAt: task.completedAt?.toISOString() ?? null,
-      createdAt: task.createdAt.toISOString(),
-      updatedAt: task.updatedAt.toISOString(),
-    }
-
-    return NextResponse.json({ data: serialized, error: null }, { status: 201 })
+    return NextResponse.json({ data: serializeTask(task), error: null }, { status: 201 })
   } catch {
     return NextResponse.json({ data: null, error: "Internal server error" }, { status: 500 })
   }

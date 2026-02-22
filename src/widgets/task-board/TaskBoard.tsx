@@ -83,6 +83,28 @@ export function TaskBoard() {
     setActiveId(String(event.active.id))
   }
 
+  function handleDropOnColumn(activeTaskId: string, columnId: string): void {
+    const newStatus: TaskStatus = columnId === COLUMN_TODAY ? "TODAY" : "BACKLOG"
+    const task = tasks.find((t) => t.id === activeTaskId)
+    if (task && task.status !== newStatus) {
+      editTask(activeTaskId, { status: newStatus })
+    }
+  }
+
+  function handleDropOnTask(activeTaskId: string, overTaskId: string): void {
+    const draggedTask = tasks.find((t) => t.id === activeTaskId)
+    const targetTask = tasks.find((t) => t.id === overTaskId)
+    if (!draggedTask || !targetTask) return
+
+    if (draggedTask.status !== targetTask.status) {
+      editTask(activeTaskId, { status: targetTask.status })
+      return
+    }
+
+    const reordered = arrayMove(tasks, tasks.indexOf(draggedTask), tasks.indexOf(targetTask))
+    reorderTasks(reordered)
+  }
+
   function handleDragEnd(event: DragEndEvent): void {
     const { active, over } = event
     setActiveId(null)
@@ -93,25 +115,11 @@ export function TaskBoard() {
     const isOverColumn = overId === COLUMN_TODAY || overId === COLUMN_BACKLOG
 
     if (isOverColumn) {
-      const newStatus = overId === COLUMN_TODAY ? "TODAY" : "BACKLOG"
-      const task = tasks.find((t) => t.id === activeTaskId)
-      if (task && task.status !== newStatus) {
-        editTask(activeTaskId, { status: newStatus })
-      }
+      handleDropOnColumn(activeTaskId, overId)
       return
     }
 
-    const activeTask = tasks.find((t) => t.id === activeTaskId)
-    const overTask = tasks.find((t) => t.id === overId)
-    if (!activeTask || !overTask) return
-
-    if (activeTask.status !== overTask.status) {
-      editTask(activeTaskId, { status: overTask.status })
-      return
-    }
-
-    const reordered = arrayMove(tasks, tasks.indexOf(activeTask), tasks.indexOf(overTask))
-    reorderTasks(reordered)
+    handleDropOnTask(activeTaskId, overId)
   }
 
   function handleStatusChange(id: string, status: TaskStatus): void {

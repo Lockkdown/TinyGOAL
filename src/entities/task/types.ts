@@ -1,4 +1,14 @@
-export type TaskStatus = "BACKLOG" | "TODAY" | "IN_PROGRESS" | "DONE" | "CANCELLED"
+import type { TaskStatus } from "@/shared/types"
+
+export type { TaskStatus }
+
+export const TASK_STATUS_VALUES = [
+  "BACKLOG",
+  "TODAY",
+  "IN_PROGRESS",
+  "DONE",
+  "CANCELLED",
+] as const satisfies TaskStatus[]
 
 export interface Task {
   id: string
