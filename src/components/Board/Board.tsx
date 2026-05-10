@@ -1,6 +1,5 @@
-import React, { useCallback, useMemo } from 'react'
-import type { Status, Task } from '../../types'
-import { useTasks } from '../../hooks/useTasks'
+import React, { useMemo } from 'react'
+import type { BoardProps, Status, Task } from '../../types'
 import Column from './Column'
 
 const COLUMN_ORDER: Status[] = ['Todo', 'In Progress', 'Done']
@@ -9,13 +8,12 @@ function tasksForStatus(tasks: Task[], status: Status): Task[] {
   return tasks.filter((t) => t.status === status)
 }
 
-export const Board: React.FC = () => {
-  const { filteredTasks, moveTask, deleteTask } = useTasks()
-
-  const handleEditTask = useCallback(() => {
-    // FORM-03: mở modal + setEditingTask
-  }, [])
-
+export const Board: React.FC<BoardProps> = ({
+  filteredTasks,
+  moveTask,
+  deleteTask,
+  onEditTask,
+}) => {
   const columns = useMemo(
     () =>
       COLUMN_ORDER.map((status) => ({
@@ -26,7 +24,7 @@ export const Board: React.FC = () => {
   )
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 py-6">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-4">
         {columns.map(({ status, tasks }) => (
           <Column
@@ -34,7 +32,7 @@ export const Board: React.FC = () => {
             status={status}
             tasks={tasks}
             onMoveTask={moveTask}
-            onEditTask={handleEditTask}
+            onEditTask={onEditTask}
             onDeleteTask={deleteTask}
           />
         ))}
