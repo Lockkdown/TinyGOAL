@@ -83,3 +83,7 @@ export type FilterBarProps = {
   onFilterChange: (key: keyof FilterState, value: string) => void
   onClearFilters: () => void
 }
+
+export type DashboardProps = {
+  stats: TaskStats
+}
