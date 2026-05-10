@@ -72,3 +72,14 @@ export type TaskFormProps = {
   onSubmit: (data: Omit<Task, 'id' | 'createdAt'>) => void
   onCancel: () => void
 }
+
+export type SearchBarProps = {
+  value: string
+  onChange: (value: string) => void
+}
+
+export type FilterBarProps = {
+  filters: FilterState
+  onFilterChange: (key: keyof FilterState, value: string) => void
+  onClearFilters: () => void
+}

@@ -1,7 +1,9 @@
 import { useCallback, useState } from 'react'
 import type { Task } from './types'
 import Board from './components/Board/Board'
+import FilterBar from './components/shared/FilterBar'
 import Modal from './components/shared/Modal'
+import SearchBar from './components/shared/SearchBar'
 import TaskForm from './components/TaskForm/TaskForm'
 import { useTasks } from './hooks/useTasks'
 
@@ -9,7 +11,17 @@ export default function App() {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [editingTask, setEditingTask] = useState<Task | null>(null)
 
-  const { filteredTasks, addTask, updateTask, moveTask, deleteTask } = useTasks()
+  const {
+    filteredTasks,
+    filters,
+    addTask,
+    updateTask,
+    moveTask,
+    deleteTask,
+    setSearch,
+    setFilter,
+    clearFilters,
+  } = useTasks()
 
   const handleAddTask = useCallback(() => {
     setEditingTask(null)
@@ -52,6 +64,10 @@ export default function App() {
           </button>
         </div>
       </header>
+      <div className="mx-auto w-full max-w-6xl space-y-4 px-4 pt-6">
+        <SearchBar value={filters.search} onChange={setSearch} />
+        <FilterBar filters={filters} onFilterChange={setFilter} onClearFilters={clearFilters} />
+      </div>
       <Board
         filteredTasks={filteredTasks}
         moveTask={moveTask}
