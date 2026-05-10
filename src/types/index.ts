@@ -35,3 +35,18 @@ export type FilterState = {
   priority: Priority | 'All'
   status: Status | 'All'
 }
+
+export type ColumnProps = {
+  status: Status
+  tasks: Task[]
+  onMoveTask: (id: string, newStatus: Status) => void
+  onEditTask: (task: Task) => void
+  onDeleteTask: (id: string) => void
+}
+
+export type TaskCardProps = {
+  task: Task
+  onEdit: (task: Task) => void
+  onDelete: (id: string) => void
+  onMove: (id: string, newStatus: Status) => void
+}
