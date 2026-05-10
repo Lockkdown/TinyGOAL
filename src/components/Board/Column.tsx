@@ -1,3 +1,4 @@
+import { useDroppable } from '@dnd-kit/core'
 import React from 'react'
 import type { ColumnProps, Status } from '../../types'
 import TaskCard from './TaskCard'
@@ -15,8 +16,15 @@ export const Column: React.FC<ColumnProps> = ({
   onEditTask,
   onDeleteTask,
 }) => {
+  const { setNodeRef, isOver } = useDroppable({ id: status })
+
   return (
-    <section className="flex min-h-[200px] flex-col rounded-lg border border-slate-200 bg-slate-50 p-4">
+    <section
+      ref={setNodeRef}
+      className={`flex min-h-[200px] flex-col rounded-lg border border-slate-200 bg-slate-50 p-4 ${
+        isOver ? 'ring-2 ring-blue-400 ring-offset-2 ring-offset-slate-100' : ''
+      }`}
+    >
       <header className="mb-3 flex items-center justify-between gap-2">
         <h2
           className={`rounded-md px-2 py-1 text-sm font-semibold ${STATUS_CLASSES[status]}`}
