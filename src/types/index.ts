@@ -72,10 +72,23 @@ export type DashboardProps = {
 
 export type ActiveView = 'board' | 'dashboard'
 
+export type BoardLayout = 'board' | 'list'
+
 export type HeaderProps = {
   activeView: ActiveView
   onChangeView: (view: ActiveView) => void
   onAddTask: () => void
+  boardLayout: BoardLayout
+  onChangeBoardLayout: (layout: BoardLayout) => void
+}
+
+export type ListViewProps = {
+  tasks: Task[]
+  moveTask: (id: string, newStatus: Status) => void
+}
+
+export type TaskListItemProps = {
+  task: Task
 }
 
 export type BoardViewProps = {

@@ -1,9 +1,11 @@
 import { useCallback, useState } from 'react'
+import ListView from './components/List/ListView'
 import Header from './components/layout/Header'
 import Modal from './components/shared/Modal'
 import TaskForm from './components/TaskForm/TaskForm'
+import { useLocalStorage } from './hooks/useLocalStorage'
 import { useTasks } from './hooks/useTasks'
-import type { ActiveView, Task } from './types'
+import type { ActiveView, BoardLayout, Task } from './types'
 import BoardView from './views/BoardView'
 import DashboardView from './views/DashboardView'
 
@@ -11,6 +13,7 @@ export default function App() {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [editingTask, setEditingTask] = useState<Task | null>(null)
   const [activeView, setActiveView] = useState<ActiveView>('board')
+  const [boardLayout, setBoardLayout] = useLocalStorage<BoardLayout>('tinygoal-view', 'board')
   const { tasks, addTask, updateTask, moveTask, deleteTask } = useTasks()
 
   const handleAddTask = useCallback(() => {
@@ -46,14 +49,20 @@ export default function App() {
         activeView={activeView}
         onChangeView={setActiveView}
         onAddTask={handleAddTask}
+        boardLayout={boardLayout}
+        onChangeBoardLayout={setBoardLayout}
       />
       {activeView === 'board' ? (
-        <BoardView
-          tasks={tasks}
-          moveTask={moveTask}
-          deleteTask={deleteTask}
-          onEditTask={handleEditTask}
-        />
+        boardLayout === 'board' ? (
+          <BoardView
+            tasks={tasks}
+            moveTask={moveTask}
+            deleteTask={deleteTask}
+            onEditTask={handleEditTask}
+          />
+        ) : (
+          <ListView tasks={tasks} moveTask={moveTask} />
+        )
       ) : (
         <DashboardView tasks={tasks} />
       )}
