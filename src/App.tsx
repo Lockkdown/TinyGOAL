@@ -1,20 +1,29 @@
 import { useCallback, useState } from 'react'
-import ListView from './components/List/ListView'
-import Header from './components/layout/Header'
+import Sidebar from './components/layout/Sidebar'
 import Modal from './components/shared/Modal'
 import TaskForm from './components/TaskForm/TaskForm'
 import { useLocalStorage } from './hooks/useLocalStorage'
 import { useTasks } from './hooks/useTasks'
 import type { ActiveView, BoardLayout, Task } from './types'
-import BoardView from './views/BoardView'
 import DashboardView from './views/DashboardView'
+import TaskView from './views/TaskView'
 
 export default function App() {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [editingTask, setEditingTask] = useState<Task | null>(null)
-  const [activeView, setActiveView] = useState<ActiveView>('board')
+  const [activeView, setActiveView] = useState<ActiveView>('task')
+  const [sidebarState, setSidebarState] = useLocalStorage<'expanded' | 'collapsed'>(
+    'tinygoal-sidebar',
+    'expanded',
+  )
   const [boardLayout, setBoardLayout] = useLocalStorage<BoardLayout>('tinygoal-view', 'board')
   const { tasks, addTask, updateTask, moveTask, deleteTask } = useTasks()
+
+  const isCollapsed = sidebarState === 'collapsed'
+
+  const handleToggleCollapsed = useCallback(() => {
+    setSidebarState(isCollapsed ? 'expanded' : 'collapsed')
+  }, [isCollapsed, setSidebarState])
 
   const handleAddTask = useCallback(() => {
     setEditingTask(null)
@@ -44,28 +53,28 @@ export default function App() {
   )
 
   return (
-    <div className="min-h-screen bg-slate-100">
-      <Header
+    <div className="flex min-h-screen bg-slate-100">
+      <Sidebar
         activeView={activeView}
         onChangeView={setActiveView}
-        onAddTask={handleAddTask}
-        boardLayout={boardLayout}
-        onChangeBoardLayout={setBoardLayout}
+        isCollapsed={isCollapsed}
+        onToggleCollapsed={handleToggleCollapsed}
       />
-      {activeView === 'board' ? (
-        boardLayout === 'board' ? (
-          <BoardView
+      <main className="flex-1">
+        {activeView === 'task' ? (
+          <TaskView
             tasks={tasks}
             moveTask={moveTask}
             deleteTask={deleteTask}
             onEditTask={handleEditTask}
+            onAddTask={handleAddTask}
+            boardLayout={boardLayout}
+            onChangeBoardLayout={setBoardLayout}
           />
         ) : (
-          <ListView tasks={tasks} moveTask={moveTask} />
-        )
-      ) : (
-        <DashboardView tasks={tasks} />
-      )}
+          <DashboardView tasks={tasks} />
+        )}
+      </main>
       <Modal
         isOpen={isFormOpen}
         onClose={handleCloseForm}

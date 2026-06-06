@@ -15,6 +15,7 @@ export const Column: React.FC<ColumnProps> = ({
   onMoveTask,
   onEditTask,
   onDeleteTask,
+  onAddTask,
 }) => {
   const { setNodeRef, isOver } = useDroppable({ id: status })
 
@@ -34,6 +35,25 @@ export const Column: React.FC<ColumnProps> = ({
         <span className="rounded-full bg-white px-2 py-0.5 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-200">
           {tasks.length}
         </span>
+        {status === 'Todo' && (
+          <button
+            type="button"
+            title="New Task"
+            onClick={onAddTask}
+            className="rounded p-0.5 text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-600"
+            aria-label="New Task"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="h-4 w-4"
+              aria-hidden="true"
+            >
+              <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+            </svg>
+          </button>
+        )}
       </header>
       {tasks.length === 0 ? (
         <p className="text-sm text-slate-500">Chưa có task</p>
