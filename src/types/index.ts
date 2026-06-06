@@ -15,6 +15,7 @@ export type Task = {
   status: Status
   deadline: string
   createdAt: string
+  completedAt?: string | null
 }
 
 export type TaskStats = {
@@ -58,14 +59,15 @@ export type ModalProps = {
   children: ReactNode
 }
 
-export type TaskFormProps = {
-  initialData?: Task
-  onSubmit: (data: Omit<Task, 'id' | 'createdAt'>) => void
-  onCancel: () => void
+export type CompletionPoint = {
+  label: string
+  date: string
+  count: number
 }
 
 export type DashboardProps = {
   stats: TaskStats
+  tasks: Task[]
 }
 
 export type ActiveView = 'task' | 'statistic'

@@ -1,17 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import CategoryBadge from '../shared/CategoryBadge'
-import PriorityIcon from '../shared/PriorityIcon'
-import TaskForm from '../TaskForm/TaskForm'
-import type { Status, TaskDetailPanelProps } from '../../types'
-import { formatDeadline, isOverdue } from '../../utils/helpers'
+import type { Category, Priority, Status, TaskDetailPanelProps } from '../../types'
 
-const STATUS_CLASSES: Record<Status, string> = {
-  Todo: 'bg-slate-100 text-slate-600',
-  'In Progress': 'bg-blue-100 text-blue-600',
-  Done: 'bg-green-100 text-green-600',
-}
-
-const OVERDUE_CLASS = 'text-red-500 font-medium'
+const STATUSES: Status[] = ['Todo', 'In Progress', 'Done']
+const CATEGORIES: Category[] = ['Work', 'Personal', 'Study', 'Other']
+const PRIORITIES: Priority[] = ['Low', 'Medium', 'High']
 
 type TaskDetailPanelContentProps = Omit<TaskDetailPanelProps, 'task'> & {
   task: NonNullable<TaskDetailPanelProps['task']>
@@ -23,8 +15,9 @@ const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
   onSave,
   onDelete,
 }) => {
-  const [mode, setMode] = useState<'view' | 'edit'>('view')
   const [entered, setEntered] = useState(false)
+  const [title, setTitle] = useState(task.title)
+  const [description, setDescription] = useState(task.description)
 
   useEffect(() => {
     const id = requestAnimationFrame(() => setEntered(true))
@@ -39,8 +32,23 @@ const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
     return () => document.removeEventListener('keydown', handler)
   }, [onClose])
 
-  const overdue = isOverdue(task)
-  const deadlineClasses = overdue ? OVERDUE_CLASS : 'text-slate-600'
+  const handleTitleBlur = () => {
+    const trimmed = title.trim()
+    if (!trimmed) {
+      setTitle(task.title)
+      return
+    }
+    if (trimmed !== task.title) {
+      onSave(task.id, { title: trimmed })
+      setTitle(trimmed)
+    }
+  }
+
+  const handleDescriptionBlur = () => {
+    if (description !== task.description) {
+      onSave(task.id, { description })
+    }
+  }
 
   return (
     <div
@@ -59,46 +67,38 @@ const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
         }`}
       >
         <div className="flex items-center gap-2 border-b border-slate-200 px-4 py-3">
-          <h2
+          <input
             id="detail-title"
-            className="min-w-0 flex-1 break-words text-xl font-semibold text-slate-900"
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            onBlur={handleTitleBlur}
+            className="min-w-0 flex-1 border-0 bg-transparent text-xl font-semibold text-slate-900 outline-none placeholder:text-slate-400 focus:ring-0"
+            placeholder="Task title"
+          />
+          <button
+            type="button"
+            onClick={() => {
+              onDelete(task.id)
+              onClose()
+            }}
+            aria-label="Delete task"
+            className="shrink-0 rounded p-1.5 text-red-500 hover:bg-red-50"
           >
-            {task.title}
-          </h2>
-          {mode === 'view' && (
-            <>
-              <button
-                type="button"
-                onClick={() => setMode('edit')}
-                className="shrink-0 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
-              >
-                Edit
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  onDelete(task.id)
-                  onClose()
-                }}
-                aria-label="Delete task"
-                className="shrink-0 rounded p-1.5 text-red-500 hover:bg-red-50"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  className="h-4 w-4"
-                  aria-hidden="true"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
-            </>
-          )}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="h-4 w-4"
+              aria-hidden="true"
+            >
+              <path
+                fillRule="evenodd"
+                d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
           <button
             type="button"
             onClick={onClose}
@@ -109,48 +109,96 @@ const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
           </button>
         </div>
 
-        {mode === 'view' ? (
-          <div className="flex flex-1 flex-col gap-5 overflow-y-auto p-5">
-            <p className="text-sm leading-relaxed text-slate-700 whitespace-pre-wrap">
-              {task.description.trim() ? (
-                task.description
-              ) : (
-                <span className="text-slate-400">No description</span>
-              )}
-            </p>
+        <div className="flex flex-1 flex-col gap-4 overflow-y-auto p-5">
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            onBlur={handleDescriptionBlur}
+            rows={4}
+            placeholder="Add a description..."
+            className="w-full resize-none border-0 bg-transparent text-sm leading-relaxed text-slate-700 outline-none placeholder:text-slate-400 focus:ring-0"
+          />
 
-            <hr className="border-slate-100" />
+          <hr className="border-slate-100" />
 
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
-              <CategoryBadge category={task.category} />
-              <div className="flex items-center gap-2">
-                <PriorityIcon priority={task.priority} />
-                <span className="text-slate-700">{task.priority}</span>
-              </div>
-              <span
-                className={`inline-flex rounded px-2 py-0.5 text-xs font-medium ${STATUS_CLASSES[task.status]}`}
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-between gap-4">
+              <label htmlFor="detail-status" className="shrink-0 text-sm font-medium text-slate-600">
+                Status
+              </label>
+              <select
+                id="detail-status"
+                value={task.status}
+                onChange={(e) => onSave(task.id, { status: e.target.value as Status })}
+                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               >
-                {task.status}
-              </span>
-              <span className={deadlineClasses}>
-                {formatDeadline(task.deadline)}
-                {overdue ? ' (Overdue)' : ''}
-              </span>
+                {STATUSES.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex items-center justify-between gap-4">
+              <label
+                htmlFor="detail-priority"
+                className="shrink-0 text-sm font-medium text-slate-600"
+              >
+                Priority
+              </label>
+              <select
+                id="detail-priority"
+                value={task.priority}
+                onChange={(e) => onSave(task.id, { priority: e.target.value as Priority })}
+                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              >
+                {PRIORITIES.map((p) => (
+                  <option key={p} value={p}>
+                    {p}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex items-center justify-between gap-4">
+              <label
+                htmlFor="detail-category"
+                className="shrink-0 text-sm font-medium text-slate-600"
+              >
+                Category
+              </label>
+              <select
+                id="detail-category"
+                value={task.category}
+                onChange={(e) => onSave(task.id, { category: e.target.value as Category })}
+                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              >
+                {CATEGORIES.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex items-center justify-between gap-4">
+              <label
+                htmlFor="detail-deadline"
+                className="shrink-0 text-sm font-medium text-slate-600"
+              >
+                Deadline
+              </label>
+              <input
+                id="detail-deadline"
+                type="date"
+                value={task.deadline}
+                onChange={(e) => onSave(task.id, { deadline: e.target.value })}
+                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
             </div>
           </div>
-        ) : (
-          <div className="flex-1 overflow-y-auto p-4">
-            <TaskForm
-              key={task.id}
-              initialData={task}
-              onSubmit={(data) => {
-                onSave(task.id, data)
-                setMode('view')
-              }}
-              onCancel={() => setMode('view')}
-            />
-          </div>
-        )}
+        </div>
       </div>
     </div>
   )

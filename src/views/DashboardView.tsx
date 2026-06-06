@@ -13,7 +13,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ tasks }) => {
       aria-labelledby="nav-statistic"
       className="mx-auto w-full max-w-6xl px-4 pb-8"
     >
-      <Dashboard stats={stats} />
+      <Dashboard stats={stats} tasks={tasks} />
     </div>
   )
 }
