@@ -1,5 +1,6 @@
 import { useDroppable } from '@dnd-kit/core'
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import type { ColumnProps, Status } from '../../types'
 import TaskCard from './TaskCard'
 
@@ -15,6 +16,7 @@ export const Column: React.FC<ColumnProps> = ({
   onAddTask,
   onOpenTask,
 }) => {
+  const { t } = useTranslation()
   const { setNodeRef, isOver } = useDroppable({ id: status })
 
   return (
@@ -28,7 +30,7 @@ export const Column: React.FC<ColumnProps> = ({
         <h2
           className={`rounded-md px-2 py-1 text-sm font-semibold ${STATUS_CLASSES[status]}`}
         >
-          {status}
+          {t(`status.${status}`)}
         </h2>
         <span className="rounded-full bg-white px-2 py-0.5 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-200">
           {tasks.length}
@@ -36,10 +38,10 @@ export const Column: React.FC<ColumnProps> = ({
         {status === 'Todo' && (
           <button
             type="button"
-            title="New Task"
+            title={t('a11y.newTask')}
             onClick={onAddTask}
             className="rounded p-0.5 text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-600"
-            aria-label="New Task"
+            aria-label={t('a11y.newTask')}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -54,7 +56,7 @@ export const Column: React.FC<ColumnProps> = ({
         )}
       </header>
       {tasks.length === 0 ? (
-        <p className="text-sm text-slate-500">Chưa có task</p>
+        <p className="text-sm text-slate-500">{t('board.empty')}</p>
       ) : (
         <ul className="flex flex-col gap-2">
           {tasks.map((task) => (

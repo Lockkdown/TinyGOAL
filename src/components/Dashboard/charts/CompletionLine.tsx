@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   CartesianGrid,
   Line,
@@ -18,17 +19,28 @@ type CompletionLineProps = {
 type RangeMode = 'day' | 'week'
 
 export const CompletionLine: React.FC<CompletionLineProps> = ({ tasks }) => {
+  const { t } = useTranslation()
   const [range, setRange] = useState<RangeMode>('day')
 
-  const series = useMemo(
-    () => (range === 'day' ? getCompletionSeries(tasks, 7) : getCompletionWeekSeries(tasks, 8)),
-    [tasks, range],
-  )
+  const series = useMemo(() => {
+    const raw =
+      range === 'day' ? getCompletionSeries(tasks, 7) : getCompletionWeekSeries(tasks, 8)
+
+    return raw.map((point) => ({
+      ...point,
+      label:
+        point.label === 'Today'
+          ? t('chart.today')
+          : point.label === 'This wk'
+            ? t('chart.thisWeek')
+            : point.label,
+    }))
+  }, [tasks, range, t])
 
   return (
     <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
       <div className="mb-2 flex items-center justify-between gap-4">
-        <h3 className="text-sm font-medium text-slate-700">Recent completion curve</h3>
+        <h3 className="text-sm font-medium text-slate-700">{t('dashboard.completionChart')}</h3>
         <div className="flex rounded-md border border-slate-200 p-0.5 text-xs">
           <button
             type="button"
@@ -40,7 +52,7 @@ export const CompletionLine: React.FC<CompletionLineProps> = ({ tasks }) => {
                 : 'text-slate-600 hover:bg-slate-50'
             }`}
           >
-            Day
+            {t('dashboard.day')}
           </button>
           <button
             type="button"
@@ -52,7 +64,7 @@ export const CompletionLine: React.FC<CompletionLineProps> = ({ tasks }) => {
                 : 'text-slate-600 hover:bg-slate-50'
             }`}
           >
-            Week
+            {t('dashboard.week')}
           </button>
         </div>
       </div>

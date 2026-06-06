@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { Category, Priority, Status, Task } from '../../types'
 import { todayDateKey } from '../../utils/helpers'
 
@@ -12,6 +13,7 @@ export type QuickAddTaskProps = {
 }
 
 export const QuickAddTask: React.FC<QuickAddTaskProps> = ({ onSubmit, onClose }) => {
+  const { t } = useTranslation()
   const [entered, setEntered] = useState(false)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -66,12 +68,12 @@ export const QuickAddTask: React.FC<QuickAddTaskProps> = ({ onSubmit, onClose })
       >
         <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
           <h2 id="quick-add-title" className="text-sm font-semibold text-slate-900">
-            New Task
+            {t('form.newTask')}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close"
+            aria-label={t('a11y.close')}
             className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
           >
             <span className="text-xl leading-none">&times;</span>
@@ -83,7 +85,7 @@ export const QuickAddTask: React.FC<QuickAddTaskProps> = ({ onSubmit, onClose })
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="What needs to be done?"
+            placeholder={t('form.titlePlaceholder')}
             autoFocus
             className="w-full border-0 bg-transparent text-2xl font-semibold text-slate-900 outline-none placeholder:text-slate-300 focus:ring-0"
           />
@@ -92,7 +94,7 @@ export const QuickAddTask: React.FC<QuickAddTaskProps> = ({ onSubmit, onClose })
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
-            placeholder="Add a description..."
+            placeholder={t('form.descriptionPlaceholder')}
             className="w-full resize-none border-0 bg-transparent text-sm leading-relaxed text-slate-700 outline-none placeholder:text-slate-400 focus:ring-0"
           />
 
@@ -100,12 +102,12 @@ export const QuickAddTask: React.FC<QuickAddTaskProps> = ({ onSubmit, onClose })
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value as Status)}
-              aria-label="Status"
+              aria-label={t('a11y.status')}
               className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               {STATUSES.map((s) => (
                 <option key={s} value={s}>
-                  {s}
+                  {t(`status.${s}`)}
                 </option>
               ))}
             </select>
@@ -113,12 +115,12 @@ export const QuickAddTask: React.FC<QuickAddTaskProps> = ({ onSubmit, onClose })
             <select
               value={priority}
               onChange={(e) => setPriority(e.target.value as Priority)}
-              aria-label="Priority"
+              aria-label={t('a11y.priority')}
               className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               {PRIORITIES.map((p) => (
                 <option key={p} value={p}>
-                  {p}
+                  {t(`priority.${p}`)}
                 </option>
               ))}
             </select>
@@ -126,12 +128,12 @@ export const QuickAddTask: React.FC<QuickAddTaskProps> = ({ onSubmit, onClose })
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value as Category)}
-              aria-label="Category"
+              aria-label={t('a11y.category')}
               className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               {CATEGORIES.map((c) => (
                 <option key={c} value={c}>
-                  {c}
+                  {t(`category.${c}`)}
                 </option>
               ))}
             </select>
@@ -140,7 +142,7 @@ export const QuickAddTask: React.FC<QuickAddTaskProps> = ({ onSubmit, onClose })
               type="date"
               value={deadline}
               onChange={(e) => setDeadline(e.target.value)}
-              aria-label="Deadline"
+              aria-label={t('a11y.deadline')}
               className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
@@ -152,7 +154,7 @@ export const QuickAddTask: React.FC<QuickAddTaskProps> = ({ onSubmit, onClose })
               disabled={isTitleEmpty}
               className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Create task
+              {t('form.createTask')}
             </button>
           </div>
         </div>

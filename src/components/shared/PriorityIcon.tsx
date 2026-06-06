@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import type { Priority } from '../../types'
 
 const PRIORITY_ICON_CLASSES: Record<Priority, string> = {
@@ -60,11 +61,14 @@ const PriorityBars: React.FC<{ priority: Priority; className: string }> = ({
 }
 
 export const PriorityIcon: React.FC<PriorityIconProps> = ({ priority }) => {
+  const { t } = useTranslation()
+  const label = t(`priority.${priority}`)
+
   return (
     <span
       className={`inline-flex shrink-0 items-center ${PRIORITY_ICON_CLASSES[priority]}`}
-      aria-label={priority}
-      title={priority}
+      aria-label={label}
+      title={label}
     >
       <PriorityBars priority={priority} className="h-4 w-4" />
     </span>

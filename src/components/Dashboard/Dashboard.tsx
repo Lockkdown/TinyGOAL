@@ -1,28 +1,41 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import type { DashboardProps } from '../../types'
 import CompletionLine from './charts/CompletionLine'
 import PriorityDonut from './charts/PriorityDonut'
 import StatusDonut from './charts/StatusDonut'
 
 export const Dashboard: React.FC<DashboardProps> = ({ stats, tasks }) => {
-  const statTiles: { label: string; value: number; accent?: string }[] = [
-    { label: 'Total tasks', value: stats.total },
-    { label: 'Todo', value: stats.todo, accent: 'text-slate-700' },
-    { label: 'In Progress', value: stats.inProgress, accent: 'text-blue-700' },
-    { label: 'Done', value: stats.done, accent: 'text-green-700' },
-    { label: 'Overdue', value: stats.overdue, accent: 'text-red-600' },
+  const { t } = useTranslation()
+
+  const statTiles: { key: string; label: string; value: number; accent?: string }[] = [
+    { key: 'total', label: t('dashboard.totalTasks'), value: stats.total },
+    { key: 'todo', label: t('dashboard.todo'), value: stats.todo, accent: 'text-slate-700' },
+    {
+      key: 'inProgress',
+      label: t('dashboard.inProgress'),
+      value: stats.inProgress,
+      accent: 'text-blue-700',
+    },
+    { key: 'done', label: t('dashboard.done'), value: stats.done, accent: 'text-green-700' },
+    {
+      key: 'overdue',
+      label: t('dashboard.overdue'),
+      value: stats.overdue,
+      accent: 'text-red-600',
+    },
   ]
 
   return (
     <section className="space-y-6 py-6" aria-labelledby="dashboard-heading">
       <h2 id="dashboard-heading" className="text-lg font-semibold text-slate-900">
-        Overview
+        {t('dashboard.overview')}
       </h2>
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
-        {statTiles.map(({ label, value, accent }) => (
+        {statTiles.map(({ key, label, value, accent }) => (
           <div
-            key={label}
+            key={key}
             className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm"
           >
             <p className="text-xs font-medium text-slate-500">{label}</p>
@@ -35,7 +48,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ stats, tasks }) => {
 
       <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
         <div className="mb-2 flex items-center justify-between gap-4">
-          <p className="text-sm font-medium text-slate-700">Completion rate</p>
+          <p className="text-sm font-medium text-slate-700">{t('dashboard.completionRate')}</p>
           <span className="text-sm font-semibold text-slate-900 tabular-nums">
             {stats.completionRate}%
           </span>

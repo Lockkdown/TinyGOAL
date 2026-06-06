@@ -1,5 +1,6 @@
 import { useDraggable } from '@dnd-kit/core'
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import CategoryBadge from '../shared/CategoryBadge'
 import PriorityIcon from '../shared/PriorityIcon'
 import type { TaskListItemProps } from '../../types'
@@ -12,6 +13,7 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({
   isOverlay = false,
   onOpenTask,
 }) => {
+  const { t } = useTranslation()
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: task.id,
     disabled: isOverlay,
@@ -41,7 +43,7 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({
     <li
       ref={isOverlay ? undefined : setNodeRef}
       className={`relative flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 touch-none active:cursor-grabbing ${overlayClasses} ${draggingClasses}`}
-      aria-label={isOverlay ? undefined : `Drag "${task.title}"`}
+      aria-label={isOverlay ? undefined : t('a11y.dragTask', { title: task.title })}
       onClick={isOverlay ? undefined : () => onOpenTask(task)}
       {...(isOverlay ? {} : listeners)}
       {...(isOverlay ? {} : attributes)}

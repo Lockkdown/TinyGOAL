@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { Category, Priority, Status, TaskDetailPanelProps } from '../../types'
 
 const STATUSES: Status[] = ['Todo', 'In Progress', 'Done']
@@ -15,6 +16,7 @@ const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
   onSave,
   onDelete,
 }) => {
+  const { t } = useTranslation()
   const [entered, setEntered] = useState(false)
   const [title, setTitle] = useState(task.title)
   const [description, setDescription] = useState(task.description)
@@ -74,7 +76,7 @@ const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
             onChange={(e) => setTitle(e.target.value)}
             onBlur={handleTitleBlur}
             className="min-w-0 flex-1 border-0 bg-transparent text-xl font-semibold text-slate-900 outline-none placeholder:text-slate-400 focus:ring-0"
-            placeholder="Task title"
+            placeholder={t('form.taskTitlePlaceholder')}
           />
           <button
             type="button"
@@ -82,7 +84,7 @@ const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
               onDelete(task.id)
               onClose()
             }}
-            aria-label="Delete task"
+            aria-label={t('a11y.deleteTask')}
             className="shrink-0 rounded p-1.5 text-red-500 hover:bg-red-50"
           >
             <svg
@@ -102,7 +104,7 @@ const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close"
+            aria-label={t('a11y.close')}
             className="shrink-0 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
           >
             <span className="text-xl leading-none">&times;</span>
@@ -115,7 +117,7 @@ const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
             onChange={(e) => setDescription(e.target.value)}
             onBlur={handleDescriptionBlur}
             rows={4}
-            placeholder="Add a description..."
+            placeholder={t('form.descriptionPlaceholder')}
             className="w-full resize-none border-0 bg-transparent text-sm leading-relaxed text-slate-700 outline-none placeholder:text-slate-400 focus:ring-0"
           />
 
@@ -124,7 +126,7 @@ const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between gap-4">
               <label htmlFor="detail-status" className="shrink-0 text-sm font-medium text-slate-600">
-                Status
+                {t('detail.status')}
               </label>
               <select
                 id="detail-status"
@@ -134,7 +136,7 @@ const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
               >
                 {STATUSES.map((s) => (
                   <option key={s} value={s}>
-                    {s}
+                    {t(`status.${s}`)}
                   </option>
                 ))}
               </select>
@@ -145,7 +147,7 @@ const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
                 htmlFor="detail-priority"
                 className="shrink-0 text-sm font-medium text-slate-600"
               >
-                Priority
+                {t('detail.priority')}
               </label>
               <select
                 id="detail-priority"
@@ -155,7 +157,7 @@ const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
               >
                 {PRIORITIES.map((p) => (
                   <option key={p} value={p}>
-                    {p}
+                    {t(`priority.${p}`)}
                   </option>
                 ))}
               </select>
@@ -166,7 +168,7 @@ const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
                 htmlFor="detail-category"
                 className="shrink-0 text-sm font-medium text-slate-600"
               >
-                Category
+                {t('detail.category')}
               </label>
               <select
                 id="detail-category"
@@ -176,7 +178,7 @@ const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
               >
                 {CATEGORIES.map((c) => (
                   <option key={c} value={c}>
-                    {c}
+                    {t(`category.${c}`)}
                   </option>
                 ))}
               </select>
@@ -187,7 +189,7 @@ const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
                 htmlFor="detail-deadline"
                 className="shrink-0 text-sm font-medium text-slate-600"
               >
-                Deadline
+                {t('detail.deadline')}
               </label>
               <input
                 id="detail-deadline"

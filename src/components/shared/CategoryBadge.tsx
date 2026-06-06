@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import type { Category } from '../../types'
 
 const CATEGORY_CLASSES: Record<Category, string> = {
@@ -13,12 +14,15 @@ type CategoryBadgeProps = {
 }
 
 export const CategoryBadge: React.FC<CategoryBadgeProps> = ({ category }) => {
+  const { t } = useTranslation()
+  const label = t(`category.${category}`)
+
   return (
     <span
       className={`inline-flex shrink-0 rounded px-1.5 py-0.5 text-xs font-medium ${CATEGORY_CLASSES[category]}`}
-      aria-label={category}
+      aria-label={label}
     >
-      {category}
+      {label}
     </span>
   )
 }

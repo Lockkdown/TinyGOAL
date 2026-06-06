@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 import type { Priority, TaskStats } from '../../../types'
 
@@ -8,20 +9,24 @@ const PRIORITY_COLORS: Record<Priority, string> = {
   High: '#ef4444',
 }
 
+const PRIORITY_KEYS: Priority[] = ['Low', 'Medium', 'High']
+
 type PriorityDonutProps = {
   stats: TaskStats
 }
 
 export const PriorityDonut: React.FC<PriorityDonutProps> = ({ stats }) => {
-  const data: { name: Priority; value: number }[] = [
-    { name: 'Low', value: stats.byPriority.Low },
-    { name: 'Medium', value: stats.byPriority.Medium },
-    { name: 'High', value: stats.byPriority.High },
-  ]
+  const { t } = useTranslation()
+
+  const data = PRIORITY_KEYS.map((key) => ({
+    key,
+    name: t(`priority.${key}`),
+    value: stats.byPriority[key],
+  }))
 
   return (
     <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-      <h3 className="mb-2 text-sm font-medium text-slate-700">Tasks by priority</h3>
+      <h3 className="mb-2 text-sm font-medium text-slate-700">{t('dashboard.priorityChart')}</h3>
       <ResponsiveContainer width="100%" height={240}>
         <PieChart>
           <Pie
@@ -35,7 +40,7 @@ export const PriorityDonut: React.FC<PriorityDonutProps> = ({ stats }) => {
             paddingAngle={2}
           >
             {data.map((entry) => (
-              <Cell key={entry.name} fill={PRIORITY_COLORS[entry.name]} />
+              <Cell key={entry.key} fill={PRIORITY_COLORS[entry.key]} />
             ))}
           </Pie>
           <Tooltip />

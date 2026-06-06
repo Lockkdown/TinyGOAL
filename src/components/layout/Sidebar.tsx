@@ -1,4 +1,6 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
+import { setLanguage, type AppLanguage } from '../../i18n'
 import type { ActiveView, SidebarProps } from '../../types'
 
 const TaskIcon: React.FC = () => (
@@ -68,12 +70,75 @@ const NavItem: React.FC<NavItemProps> = ({
   )
 }
 
+type LanguageSwitchProps = {
+  isCollapsed: boolean
+}
+
+const LanguageSwitch: React.FC<LanguageSwitchProps> = ({ isCollapsed }) => {
+  const { t, i18n } = useTranslation()
+  const current = i18n.language.startsWith('vi') ? 'vi' : 'en'
+
+  const handleChange = (lng: AppLanguage) => {
+    if (lng !== current) setLanguage(lng)
+  }
+
+  if (isCollapsed) {
+    return (
+      <button
+        type="button"
+        onClick={() => handleChange(current === 'vi' ? 'en' : 'vi')}
+        aria-label={current === 'vi' ? t('lang.switchToEn') : t('lang.switchToVi')}
+        className="rounded-md px-2 py-1 text-xs font-semibold text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
+      >
+        {current === 'vi' ? t('lang.en') : t('lang.vi')}
+      </button>
+    )
+  }
+
+  return (
+    <div
+      role="group"
+      aria-label={current === 'vi' ? t('lang.switchToVi') : t('lang.switchToEn')}
+      className="flex rounded-md border border-slate-200 p-0.5 text-xs"
+    >
+      <button
+        type="button"
+        onClick={() => handleChange('vi')}
+        aria-pressed={current === 'vi'}
+        aria-label={t('lang.switchToVi')}
+        className={`rounded px-2 py-1 font-semibold transition-colors ${
+          current === 'vi'
+            ? 'bg-slate-900 text-white'
+            : 'text-slate-600 hover:bg-slate-50'
+        }`}
+      >
+        {t('lang.vi')}
+      </button>
+      <button
+        type="button"
+        onClick={() => handleChange('en')}
+        aria-pressed={current === 'en'}
+        aria-label={t('lang.switchToEn')}
+        className={`rounded px-2 py-1 font-semibold transition-colors ${
+          current === 'en'
+            ? 'bg-slate-900 text-white'
+            : 'text-slate-600 hover:bg-slate-50'
+        }`}
+      >
+        {t('lang.en')}
+      </button>
+    </div>
+  )
+}
+
 export const Sidebar: React.FC<SidebarProps> = ({
   activeView,
   onChangeView,
   isCollapsed,
   onToggleCollapsed,
 }) => {
+  const { t } = useTranslation()
+
   return (
     <aside
       className={`flex shrink-0 flex-col border-r border-slate-200 bg-white transition-all duration-200 ${
@@ -85,11 +150,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
           isCollapsed ? 'justify-center' : 'justify-between'
         }`}
       >
-        {!isCollapsed && <h1 className="text-lg font-bold text-slate-900">TinyGOAL</h1>}
+        {!isCollapsed && (
+          <h1 className="text-lg font-bold text-slate-900">{t('app.name')}</h1>
+        )}
         <button
           type="button"
           onClick={onToggleCollapsed}
-          aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-label={
+            isCollapsed ? t('a11y.expandSidebar') : t('a11y.collapseSidebar')
+          }
           className="rounded-md p-1.5 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900"
         >
           <svg
@@ -107,10 +176,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </svg>
         </button>
       </div>
-      <nav role="tablist" aria-label="Switch view" className="flex flex-col gap-1 p-2">
+      <nav
+        role="tablist"
+        aria-label={t('nav.switchView')}
+        className="flex flex-col gap-1 p-2"
+      >
         <NavItem
           view="task"
-          label="Task"
+          label={t('nav.task')}
           icon={<TaskIcon />}
           activeView={activeView}
           isCollapsed={isCollapsed}
@@ -120,7 +193,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         />
         <NavItem
           view="statistic"
-          label="Statistic"
+          label={t('nav.statistic')}
           icon={<StatisticIcon />}
           activeView={activeView}
           isCollapsed={isCollapsed}
@@ -129,6 +202,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
           panelId="statistic-panel"
         />
       </nav>
+      <div className={`mt-auto border-t border-slate-200 p-2 ${isCollapsed ? 'flex justify-center' : ''}`}>
+        <LanguageSwitch isCollapsed={isCollapsed} />
+      </div>
     </aside>
   )
 }

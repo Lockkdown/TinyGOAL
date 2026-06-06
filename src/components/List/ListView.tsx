@@ -9,6 +9,7 @@ import {
   useSensors,
 } from '@dnd-kit/core'
 import React, { useCallback, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { ListViewProps, Status, Task } from '../../types'
 import TaskListItem from './TaskListItem'
 
@@ -75,6 +76,7 @@ type ListGroupProps = {
 }
 
 const ListGroup: React.FC<ListGroupProps> = ({ status, items, onAddTask, onOpenTask }) => {
+  const { t } = useTranslation()
   const { setNodeRef, isOver } = useDroppable({ id: status })
 
   return (
@@ -86,16 +88,16 @@ const ListGroup: React.FC<ListGroupProps> = ({ status, items, onAddTask, onOpenT
         className={`flex w-full items-center gap-2 rounded-md px-3 py-2 ${STATUS_HEADER_CLASSES[status]}`}
       >
         <StatusIcon status={status} />
-        <h2 className="text-sm font-semibold">{status}</h2>
+        <h2 className="text-sm font-semibold">{t(`status.${status}`)}</h2>
         <span className={`text-sm font-medium tabular-nums ${STATUS_COUNT_CLASSES[status]}`}>
           {items.length}
         </span>
         {onAddTask && (
           <button
             type="button"
-            title="New Task"
+            title={t('a11y.newTask')}
             onClick={onAddTask}
-            aria-label="New Task"
+            aria-label={t('a11y.newTask')}
             className="ml-auto rounded p-0.5 text-slate-500 transition-colors hover:bg-slate-300/50 hover:text-slate-700"
           >
             <svg
@@ -112,7 +114,7 @@ const ListGroup: React.FC<ListGroupProps> = ({ status, items, onAddTask, onOpenT
       </header>
       <div className="mt-2">
         {items.length === 0 ? (
-          <p className="px-1 py-2 text-sm text-slate-500">Chưa có task</p>
+          <p className="px-1 py-2 text-sm text-slate-500">{t('board.empty')}</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {items.map((task) => (
