@@ -20,7 +20,7 @@ function tasksForStatus(tasks: Task[], status: Status): Task[] {
 }
 
 export const Board: React.FC<BoardProps> = ({
-  filteredTasks,
+  tasks,
   moveTask,
   deleteTask,
   onEditTask,
@@ -35,37 +35,35 @@ export const Board: React.FC<BoardProps> = ({
       const overId = String(over.id)
       if (!isColumnStatus(overId)) return
       const targetStatus = overId
-      const task = filteredTasks.find((t) => t.id === taskId)
+      const task = tasks.find((t) => t.id === taskId)
       if (!task || task.status === targetStatus) return
       moveTask(taskId, targetStatus)
     },
-    [filteredTasks, moveTask],
+    [tasks, moveTask],
   )
 
   const columns = useMemo(
     () =>
       COLUMN_ORDER.map((status) => ({
         status,
-        tasks: tasksForStatus(filteredTasks, status),
+        tasks: tasksForStatus(tasks, status),
       })),
-    [filteredTasks],
+    [tasks],
   )
 
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-      <div className="mx-auto w-full max-w-6xl px-4 py-6">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-4">
-          {columns.map(({ status, tasks }) => (
-            <Column
-              key={status}
-              status={status}
-              tasks={tasks}
-              onMoveTask={moveTask}
-              onEditTask={onEditTask}
-              onDeleteTask={deleteTask}
-            />
-          ))}
-        </div>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-4">
+        {columns.map(({ status, tasks }) => (
+          <Column
+            key={status}
+            status={status}
+            tasks={tasks}
+            onMoveTask={moveTask}
+            onEditTask={onEditTask}
+            onDeleteTask={deleteTask}
+          />
+        ))}
       </div>
     </DndContext>
   )
