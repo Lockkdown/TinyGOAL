@@ -71,9 +71,10 @@ type ListGroupProps = {
   status: Status
   items: Task[]
   onAddTask?: () => void
+  onOpenTask: (task: Task) => void
 }
 
-const ListGroup: React.FC<ListGroupProps> = ({ status, items, onAddTask }) => {
+const ListGroup: React.FC<ListGroupProps> = ({ status, items, onAddTask, onOpenTask }) => {
   const { setNodeRef, isOver } = useDroppable({ id: status })
 
   return (
@@ -115,7 +116,7 @@ const ListGroup: React.FC<ListGroupProps> = ({ status, items, onAddTask }) => {
         ) : (
           <ul className="flex flex-col gap-2">
             {items.map((task) => (
-              <TaskListItem key={task.id} task={task} />
+              <TaskListItem key={task.id} task={task} onOpenTask={onOpenTask} />
             ))}
           </ul>
         )}
@@ -124,7 +125,7 @@ const ListGroup: React.FC<ListGroupProps> = ({ status, items, onAddTask }) => {
   )
 }
 
-export const ListView: React.FC<ListViewProps> = ({ tasks, moveTask, onAddTask }) => {
+export const ListView: React.FC<ListViewProps> = ({ tasks, moveTask, onAddTask, onOpenTask }) => {
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }))
   const [activeTask, setActiveTask] = useState<Task | null>(null)
   const [activeWidth, setActiveWidth] = useState<number | null>(null)
@@ -180,13 +181,14 @@ export const ListView: React.FC<ListViewProps> = ({ tasks, moveTask, onAddTask }
             status={status}
             items={items}
             onAddTask={status === 'Todo' ? onAddTask : undefined}
+            onOpenTask={onOpenTask}
           />
         ))}
       </div>
       <DragOverlay dropAnimation={null}>
         {activeTask ? (
           <div style={{ width: activeWidth ?? undefined }}>
-            <TaskListItem task={activeTask} isOverlay />
+            <TaskListItem task={activeTask} onOpenTask={() => {}} isOverlay />
           </div>
         ) : null}
       </DragOverlay>

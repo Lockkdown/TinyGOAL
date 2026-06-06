@@ -25,9 +25,8 @@ function tasksForStatus(tasks: Task[], status: Status): Task[] {
 export const Board: React.FC<BoardProps> = ({
   tasks,
   moveTask,
-  deleteTask,
-  onEditTask,
   onAddTask,
+  onOpenTask,
 }) => {
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }))
   const [activeTask, setActiveTask] = useState<Task | null>(null)
@@ -88,10 +87,8 @@ export const Board: React.FC<BoardProps> = ({
             key={status}
             status={status}
             tasks={tasks}
-            onMoveTask={moveTask}
-            onEditTask={onEditTask}
-            onDeleteTask={deleteTask}
             onAddTask={onAddTask}
+            onOpenTask={onOpenTask}
           />
         ))}
       </div>
@@ -100,9 +97,7 @@ export const Board: React.FC<BoardProps> = ({
           <div style={{ width: activeWidth ?? undefined }}>
             <TaskCard
               task={activeTask}
-              onEdit={onEditTask}
-              onDelete={deleteTask}
-              onMove={moveTask}
+              onOpenTask={() => {}}
               isOverlay
             />
           </div>

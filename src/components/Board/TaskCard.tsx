@@ -9,8 +9,7 @@ const OVERDUE_CLASS = 'text-red-500 font-medium'
 
 export const TaskCard: React.FC<TaskCardProps> = ({
   task,
-  onEdit,
-  onDelete,
+  onOpenTask,
   isOverlay = false,
 }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
@@ -49,7 +48,8 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   return (
     <li
       ref={isOverlay ? undefined : setNodeRef}
-      className={`relative list-none touch-none rounded-lg border p-3 ${cardDoneClasses} ${cardTransitionClasses} ${overlayClasses} ${draggingClasses}`}
+      className={`relative list-none touch-none cursor-pointer rounded-lg border p-3 ${cardDoneClasses} ${cardTransitionClasses} ${overlayClasses} ${draggingClasses}`}
+      onClick={isOverlay ? undefined : () => onOpenTask(task)}
       {...(isOverlay ? {} : listeners)}
       {...(isOverlay ? {} : attributes)}
     >
@@ -70,26 +70,6 @@ export const TaskCard: React.FC<TaskCardProps> = ({
         <p className={`text-xs ${isDone ? 'text-slate-400' : deadlineClasses}`}>
           {formatDeadline(task.deadline)}
         </p>
-        {!isOverlay && (
-          <div className="mt-1 flex gap-2">
-            <button
-              type="button"
-              className="rounded border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
-              onPointerDown={(e) => e.stopPropagation()}
-              onClick={() => onEdit(task)}
-            >
-              Edit
-            </button>
-            <button
-              type="button"
-              className="rounded border border-red-200 bg-white px-2 py-1 text-xs font-medium text-red-700 hover:bg-red-50"
-              onPointerDown={(e) => e.stopPropagation()}
-              onClick={() => onDelete(task.id)}
-            >
-              Delete
-            </button>
-          </div>
-        )}
       </div>
     </li>
   )

@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react'
 import Sidebar from './components/layout/Sidebar'
 import Modal from './components/shared/Modal'
+import TaskDetailPanel from './components/TaskDetail/TaskDetailPanel'
 import TaskForm from './components/TaskForm/TaskForm'
 import { useLocalStorage } from './hooks/useLocalStorage'
 import { useTasks } from './hooks/useTasks'
@@ -10,7 +11,7 @@ import TaskView from './views/TaskView'
 
 export default function App() {
   const [isFormOpen, setIsFormOpen] = useState(false)
-  const [editingTask, setEditingTask] = useState<Task | null>(null)
+  const [detailTaskId, setDetailTaskId] = useState<string | null>(null)
   const [activeView, setActiveView] = useState<ActiveView>('task')
   const [sidebarState, setSidebarState] = useLocalStorage<'expanded' | 'collapsed'>(
     'tinygoal-sidebar',
@@ -19,6 +20,8 @@ export default function App() {
   const [boardLayout, setBoardLayout] = useLocalStorage<BoardLayout>('tinygoal-view', 'board')
   const { tasks, addTask, updateTask, moveTask, deleteTask } = useTasks()
 
+  const activeDetail = tasks.find((t) => t.id === detailTaskId) ?? null
+
   const isCollapsed = sidebarState === 'collapsed'
 
   const handleToggleCollapsed = useCallback(() => {
@@ -26,30 +29,23 @@ export default function App() {
   }, [isCollapsed, setSidebarState])
 
   const handleAddTask = useCallback(() => {
-    setEditingTask(null)
     setIsFormOpen(true)
   }, [])
 
-  const handleEditTask = useCallback((task: Task) => {
-    setEditingTask(task)
-    setIsFormOpen(true)
+  const handleOpenTask = useCallback((task: Task) => {
+    setDetailTaskId(task.id)
   }, [])
 
   const handleCloseForm = useCallback(() => {
     setIsFormOpen(false)
-    setEditingTask(null)
   }, [])
 
   const handleFormSubmit = useCallback(
     (data: Omit<Task, 'id' | 'createdAt'>) => {
-      if (editingTask) {
-        updateTask(editingTask.id, data)
-      } else {
-        addTask(data)
-      }
+      addTask(data)
       handleCloseForm()
     },
-    [editingTask, addTask, updateTask, handleCloseForm],
+    [addTask, handleCloseForm],
   )
 
   return (
@@ -65,9 +61,8 @@ export default function App() {
           <TaskView
             tasks={tasks}
             moveTask={moveTask}
-            deleteTask={deleteTask}
-            onEditTask={handleEditTask}
             onAddTask={handleAddTask}
+            onOpenTask={handleOpenTask}
             boardLayout={boardLayout}
             onChangeBoardLayout={setBoardLayout}
           />
@@ -75,18 +70,18 @@ export default function App() {
           <DashboardView tasks={tasks} />
         )}
       </main>
-      <Modal
-        isOpen={isFormOpen}
-        onClose={handleCloseForm}
-        title={editingTask ? 'Edit task' : 'Add task'}
-      >
-        <TaskForm
-          key={editingTask?.id ?? 'new'}
-          initialData={editingTask ?? undefined}
-          onSubmit={handleFormSubmit}
-          onCancel={handleCloseForm}
-        />
+      <Modal isOpen={isFormOpen} onClose={handleCloseForm} title="Add task">
+        <TaskForm key="new" onSubmit={handleFormSubmit} onCancel={handleCloseForm} />
       </Modal>
+      <TaskDetailPanel
+        task={activeDetail}
+        onClose={() => setDetailTaskId(null)}
+        onSave={updateTask}
+        onDelete={(id) => {
+          deleteTask(id)
+          setDetailTaskId(null)
+        }}
+      />
     </div>
   )
 }
