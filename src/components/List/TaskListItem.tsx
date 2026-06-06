@@ -1,14 +1,16 @@
 import { useDraggable } from '@dnd-kit/core'
-import { CSS } from '@dnd-kit/utilities'
 import React, { useState } from 'react'
+import CategoryBadge from '../shared/CategoryBadge'
+import PriorityIcon from '../shared/PriorityIcon'
 import type { TaskListItemProps } from '../../types'
 import { formatDeadline, isOverdue } from '../../utils/helpers'
 
 const OVERDUE_CLASS = 'text-red-400'
 
-export const TaskListItem: React.FC<TaskListItemProps> = ({ task }) => {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+export const TaskListItem: React.FC<TaskListItemProps> = ({ task, isOverlay = false }) => {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: task.id,
+    disabled: isOverlay,
   })
 
   const isDone = task.status === 'Done'
@@ -16,8 +18,6 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({ task }) => {
   const skipStrikeTransition = initialStatus === 'Done' && task.status === 'Done'
 
   const deadlineClasses = isOverdue(task) ? OVERDUE_CLASS : 'text-slate-400'
-  const style =
-    transform != null ? { transform: CSS.Transform.toString(transform) } : undefined
 
   const titleStrikeClasses = skipStrikeTransition
     ? isDone
@@ -27,16 +27,19 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({ task }) => {
         isDone ? 'text-slate-500 opacity-70 after:w-full' : 'text-slate-900 after:w-0'
       } after:transition-[width] after:duration-300 after:ease-out motion-reduce:after:transition-none`
 
+  const overlayClasses = isOverlay
+    ? 'cursor-grabbing shadow-lg ring-1 ring-slate-200 pointer-events-none'
+    : ''
+
+  const draggingClasses = !isOverlay && isDragging ? 'opacity-40' : ''
+
   return (
     <li
-      ref={setNodeRef}
-      style={style}
-      className={`relative flex cursor-grab items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 touch-none active:cursor-grabbing ${
-        isDragging ? 'opacity-50' : ''
-      }`}
-      aria-label={`Drag "${task.title}"`}
-      {...listeners}
-      {...attributes}
+      ref={isOverlay ? undefined : setNodeRef}
+      className={`relative flex cursor-grab items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 touch-none active:cursor-grabbing ${overlayClasses} ${draggingClasses}`}
+      aria-label={isOverlay ? undefined : `Drag "${task.title}"`}
+      {...(isOverlay ? {} : listeners)}
+      {...(isOverlay ? {} : attributes)}
     >
       <span className="shrink-0 text-slate-400" aria-hidden="true">
         <svg
@@ -53,10 +56,15 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({ task }) => {
       >
         {task.title}
       </span>
-      <div className="flex shrink-0 items-center gap-2 text-xs text-slate-400">
+      <div
+        className={`flex shrink-0 items-center gap-2 text-xs text-slate-400 ${isDone ? 'opacity-60' : ''}`}
+      >
         <span className={deadlineClasses}>{formatDeadline(task.deadline)}</span>
         <span aria-hidden="true">·</span>
-        <span>{task.category}</span>
+        <CategoryBadge category={task.category} />
+      </div>
+      <div className={isDone ? 'opacity-60' : ''}>
+        <PriorityIcon priority={task.priority} />
       </div>
     </li>
   )

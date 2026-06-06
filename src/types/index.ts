@@ -45,6 +45,7 @@ export type TaskCardProps = {
   onEdit: (task: Task) => void
   onDelete: (id: string) => void
   onMove: (id: string, newStatus: Status) => void
+  isOverlay?: boolean
 }
 
 export type BoardProps = {
@@ -101,6 +102,7 @@ export type ListViewProps = {
 
 export type TaskListItemProps = {
   task: Task
+  isOverlay?: boolean
 }
 
 export type BoardViewProps = {

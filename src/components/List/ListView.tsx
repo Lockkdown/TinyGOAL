@@ -1,12 +1,14 @@
 import {
   DndContext,
+  DragOverlay,
   type DragEndEvent,
+  type DragStartEvent,
   PointerSensor,
   useDroppable,
   useSensor,
   useSensors,
 } from '@dnd-kit/core'
-import React, { useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
 import type { ListViewProps, Status, Task } from '../../types'
 import TaskListItem from './TaskListItem'
 
@@ -124,10 +126,25 @@ const ListGroup: React.FC<ListGroupProps> = ({ status, items, onAddTask }) => {
 
 export const ListView: React.FC<ListViewProps> = ({ tasks, moveTask, onAddTask }) => {
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }))
+  const [activeTask, setActiveTask] = useState<Task | null>(null)
+  const [activeWidth, setActiveWidth] = useState<number | null>(null)
+
+  const handleDragStart = useCallback(
+    (event: DragStartEvent) => {
+      const task = tasks.find((t) => t.id === event.active.id)
+      if (!task) return
+      setActiveTask(task)
+      const width = event.active.rect.current.initial?.width
+      if (width) setActiveWidth(width)
+    },
+    [tasks],
+  )
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
       const { active, over } = event
+      setActiveTask(null)
+      setActiveWidth(null)
       if (!over) return
       const taskId = String(active.id)
       const overId = String(over.id)
@@ -139,13 +156,23 @@ export const ListView: React.FC<ListViewProps> = ({ tasks, moveTask, onAddTask }
     [tasks, moveTask],
   )
 
+  const handleDragCancel = useCallback(() => {
+    setActiveTask(null)
+    setActiveWidth(null)
+  }, [])
+
   const tasksByStatus = STATUSES.map((status) => ({
     status,
     items: tasks.filter((task) => task.status === status),
   }))
 
   return (
-    <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+    <DndContext
+      sensors={sensors}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      onDragCancel={handleDragCancel}
+    >
       <div className="mx-auto w-full max-w-6xl space-y-6 px-4 pt-6 pb-8">
         {tasksByStatus.map(({ status, items }) => (
           <ListGroup
@@ -156,6 +183,13 @@ export const ListView: React.FC<ListViewProps> = ({ tasks, moveTask, onAddTask }
           />
         ))}
       </div>
+      <DragOverlay dropAnimation={null}>
+        {activeTask ? (
+          <div style={{ width: activeWidth ?? undefined }}>
+            <TaskListItem task={activeTask} isOverlay />
+          </div>
+        ) : null}
+      </DragOverlay>
     </DndContext>
   )
 }
