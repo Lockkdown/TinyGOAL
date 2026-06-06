@@ -12,10 +12,8 @@ const STATUS_CLASSES: Record<Status, string> = {
 export const Column: React.FC<ColumnProps> = ({
   status,
   tasks,
-  onMoveTask,
-  onEditTask,
-  onDeleteTask,
   onAddTask,
+  onOpenTask,
 }) => {
   const { setNodeRef, isOver } = useDroppable({ id: status })
 
@@ -63,9 +61,7 @@ export const Column: React.FC<ColumnProps> = ({
             <TaskCard
               key={task.id}
               task={task}
-              onEdit={onEditTask}
-              onDelete={onDeleteTask}
-              onMove={onMoveTask}
+              onOpenTask={onOpenTask}
             />
           ))}
         </ul>

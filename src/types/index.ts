@@ -34,26 +34,21 @@ export type TaskStats = {
 export type ColumnProps = {
   status: Status
   tasks: Task[]
-  onMoveTask: (id: string, newStatus: Status) => void
-  onEditTask: (task: Task) => void
-  onDeleteTask: (id: string) => void
   onAddTask: () => void
+  onOpenTask: (task: Task) => void
 }
 
 export type TaskCardProps = {
   task: Task
-  onEdit: (task: Task) => void
-  onDelete: (id: string) => void
-  onMove: (id: string, newStatus: Status) => void
+  onOpenTask: (task: Task) => void
   isOverlay?: boolean
 }
 
 export type BoardProps = {
   tasks: Task[]
   moveTask: (id: string, newStatus: Status) => void
-  deleteTask: (id: string) => void
-  onEditTask: (task: Task) => void
   onAddTask: () => void
+  onOpenTask: (task: Task) => void
 }
 
 export type ModalProps = {
@@ -87,9 +82,8 @@ export type SidebarProps = {
 export type TaskViewProps = {
   tasks: Task[]
   moveTask: (id: string, newStatus: Status) => void
-  deleteTask: (id: string) => void
-  onEditTask: (task: Task) => void
   onAddTask: () => void
+  onOpenTask: (task: Task) => void
   boardLayout: BoardLayout
   onChangeBoardLayout: (layout: BoardLayout) => void
 }
@@ -98,21 +92,29 @@ export type ListViewProps = {
   tasks: Task[]
   moveTask: (id: string, newStatus: Status) => void
   onAddTask: () => void
+  onOpenTask: (task: Task) => void
 }
 
 export type TaskListItemProps = {
   task: Task
   isOverlay?: boolean
+  onOpenTask: (task: Task) => void
 }
 
 export type BoardViewProps = {
   tasks: Task[]
   moveTask: (id: string, newStatus: Status) => void
-  deleteTask: (id: string) => void
-  onEditTask: (task: Task) => void
   onAddTask: () => void
+  onOpenTask: (task: Task) => void
 }
 
 export type DashboardViewProps = {
   tasks: Task[]
+}
+
+export type TaskDetailPanelProps = {
+  task: Task | null
+  onClose: () => void
+  onSave: (id: string, updates: Partial<Task>) => void
+  onDelete: (id: string) => void
 }

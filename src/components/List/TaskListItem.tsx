@@ -7,7 +7,11 @@ import { formatDeadline, isOverdue } from '../../utils/helpers'
 
 const OVERDUE_CLASS = 'text-red-400'
 
-export const TaskListItem: React.FC<TaskListItemProps> = ({ task, isOverlay = false }) => {
+export const TaskListItem: React.FC<TaskListItemProps> = ({
+  task,
+  isOverlay = false,
+  onOpenTask,
+}) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: task.id,
     disabled: isOverlay,
@@ -36,8 +40,9 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({ task, isOverlay = fa
   return (
     <li
       ref={isOverlay ? undefined : setNodeRef}
-      className={`relative flex cursor-grab items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 touch-none active:cursor-grabbing ${overlayClasses} ${draggingClasses}`}
+      className={`relative flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 touch-none active:cursor-grabbing ${overlayClasses} ${draggingClasses}`}
       aria-label={isOverlay ? undefined : `Drag "${task.title}"`}
+      onClick={isOverlay ? undefined : () => onOpenTask(task)}
       {...(isOverlay ? {} : listeners)}
       {...(isOverlay ? {} : attributes)}
     >

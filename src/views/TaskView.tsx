@@ -6,9 +6,8 @@ import BoardView from './BoardView'
 export const TaskView: React.FC<TaskViewProps> = ({
   tasks,
   moveTask,
-  deleteTask,
-  onEditTask,
   onAddTask,
+  onOpenTask,
   boardLayout,
   onChangeBoardLayout,
 }) => {
@@ -80,12 +79,16 @@ export const TaskView: React.FC<TaskViewProps> = ({
         <BoardView
           tasks={tasks}
           moveTask={moveTask}
-          deleteTask={deleteTask}
-          onEditTask={onEditTask}
           onAddTask={onAddTask}
+          onOpenTask={onOpenTask}
         />
       ) : (
-        <ListView tasks={tasks} moveTask={moveTask} onAddTask={onAddTask} />
+        <ListView
+          tasks={tasks}
+          moveTask={moveTask}
+          onAddTask={onAddTask}
+          onOpenTask={onOpenTask}
+        />
       )}
     </div>
   )
