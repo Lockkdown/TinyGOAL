@@ -1,6 +1,6 @@
 import { useDraggable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
-import React from 'react'
+import React, { useState } from 'react'
 import type { Priority, TaskCardProps } from '../../types'
 import { formatDeadline, isOverdue } from '../../utils/helpers'
 
@@ -17,31 +17,59 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete }) =>
     id: task.id,
   })
 
+  const isDone = task.status === 'Done'
+  const [initialStatus] = useState(task.status)
+  const skipDoneTransition = initialStatus === 'Done' && isDone
+
   const deadlineClasses = isOverdue(task) ? OVERDUE_CLASS : 'text-slate-600'
   const style =
     transform != null ? { transform: CSS.Transform.toString(transform) } : undefined
+
+  const cardDoneClasses = isDone
+    ? 'border-slate-100 bg-slate-50 opacity-70 shadow-none'
+    : 'border-slate-200 bg-white shadow-sm'
+
+  const cardTransitionClasses = skipDoneTransition
+    ? ''
+    : 'transition-[opacity,background-color,border-color,box-shadow] duration-300 motion-reduce:transition-none'
+
+  const titleStrikeClasses = skipDoneTransition
+    ? isDone
+      ? 'text-slate-500 after:w-full'
+      : 'text-slate-900 after:w-0'
+    : `transition-opacity duration-300 motion-reduce:transition-none ${
+        isDone ? 'text-slate-500 after:w-full' : 'text-slate-900 after:w-0'
+      } after:transition-[width] after:duration-300 after:ease-out motion-reduce:after:transition-none`
 
   return (
     <li
       ref={setNodeRef}
       style={style}
-      className={`list-none touch-none rounded-lg border border-slate-200 bg-white p-3 shadow-sm ${
+      className={`relative list-none touch-none rounded-lg border p-3 ${cardDoneClasses} ${cardTransitionClasses} ${
         isDragging ? 'opacity-50' : ''
       }`}
       {...listeners}
       {...attributes}
     >
-      <div className="flex flex-col gap-2">
+      <div className={`flex flex-col gap-2 ${isDone ? 'opacity-90' : ''}`}>
         <div className="flex flex-wrap items-start justify-between gap-2">
-          <h3 className="text-sm font-semibold text-slate-900">{task.title}</h3>
+          <div className="flex min-w-0 items-center gap-1.5">
+            <h3
+              className={`relative text-sm font-semibold after:absolute after:top-1/2 after:left-0 after:h-px after:bg-current ${titleStrikeClasses}`}
+            >
+              {task.title}
+            </h3>
+          </div>
           <span
             className={`inline-flex shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${PRIORITY_CLASSES[task.priority]}`}
           >
             {task.priority}
           </span>
         </div>
-        <p className="text-xs text-slate-500">{task.category}</p>
-        <p className={`text-xs ${deadlineClasses}`}>{formatDeadline(task.deadline)}</p>
+        <p className={`text-xs ${isDone ? 'text-slate-400' : 'text-slate-500'}`}>{task.category}</p>
+        <p className={`text-xs ${isDone ? 'text-slate-400' : deadlineClasses}`}>
+          {formatDeadline(task.deadline)}
+        </p>
         <div className="mt-1 flex gap-2">
           <button
             type="button"
