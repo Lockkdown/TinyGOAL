@@ -1,7 +1,10 @@
 import React from 'react'
 import type { DashboardProps } from '../../types'
+import CompletionLine from './charts/CompletionLine'
+import PriorityDonut from './charts/PriorityDonut'
+import StatusDonut from './charts/StatusDonut'
 
-export const Dashboard: React.FC<DashboardProps> = ({ stats }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ stats, tasks }) => {
   const statTiles: { label: string; value: number; accent?: string }[] = [
     { label: 'Total tasks', value: stats.total },
     { label: 'Todo', value: stats.todo, accent: 'text-slate-700' },
@@ -44,6 +47,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ stats }) => {
           />
         </div>
       </div>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <StatusDonut stats={stats} />
+        <PriorityDonut stats={stats} />
+      </div>
+
+      <CompletionLine tasks={tasks} />
     </section>
   )
 }

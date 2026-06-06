@@ -3,6 +3,14 @@ import type { Status, Task } from '../types'
 import { generateId } from '../utils/helpers'
 import { useLocalStorage } from './useLocalStorage'
 
+function withCompletedAt(prev: Task, nextStatus: Status): Pick<Task, 'completedAt'> {
+  const wasDone = prev.status === 'Done'
+  const isDone = nextStatus === 'Done'
+  if (isDone && !wasDone) return { completedAt: new Date().toISOString() }
+  if (!isDone && wasDone) return { completedAt: null }
+  return { completedAt: prev.completedAt ?? null }
+}
+
 export function useTasks() {
   const [tasks, setTasks] = useLocalStorage<Task[]>('tinygoal-tasks', [])
   const tasksRef = useRef(tasks)
@@ -17,6 +25,7 @@ export function useTasks() {
         ...task,
         id: generateId(),
         createdAt: new Date().toISOString(),
+        completedAt: null,
       }
       const next = [...tasksRef.current, newTask]
       tasksRef.current = next
@@ -27,7 +36,13 @@ export function useTasks() {
 
   const updateTask = useCallback(
     (id: string, updates: Partial<Task>) => {
-      const next = tasksRef.current.map((t) => (t.id === id ? { ...t, ...updates } : t))
+      const next = tasksRef.current.map((t) => {
+        if (t.id !== id) return t
+        if (updates.status !== undefined) {
+          return { ...t, ...updates, ...withCompletedAt(t, updates.status) }
+        }
+        return { ...t, ...updates }
+      })
       tasksRef.current = next
       setTasks(next)
     },
@@ -46,7 +61,7 @@ export function useTasks() {
   const moveTask = useCallback(
     (id: string, newStatus: Status) => {
       const next = tasksRef.current.map((t) =>
-        t.id === id ? { ...t, status: newStatus } : t,
+        t.id === id ? { ...t, status: newStatus, ...withCompletedAt(t, newStatus) } : t,
       )
       tasksRef.current = next
       setTasks(next)

@@ -1,8 +1,7 @@
 import { useCallback, useState } from 'react'
 import Sidebar from './components/layout/Sidebar'
-import Modal from './components/shared/Modal'
 import TaskDetailPanel from './components/TaskDetail/TaskDetailPanel'
-import TaskForm from './components/TaskForm/TaskForm'
+import QuickAddTask from './components/TaskForm/QuickAddTask'
 import { useLocalStorage } from './hooks/useLocalStorage'
 import { useTasks } from './hooks/useTasks'
 import type { ActiveView, BoardLayout, Task } from './types'
@@ -70,9 +69,9 @@ export default function App() {
           <DashboardView tasks={tasks} />
         )}
       </main>
-      <Modal isOpen={isFormOpen} onClose={handleCloseForm} title="Add task">
-        <TaskForm key="new" onSubmit={handleFormSubmit} onCancel={handleCloseForm} />
-      </Modal>
+      {isFormOpen && (
+        <QuickAddTask onSubmit={handleFormSubmit} onClose={handleCloseForm} />
+      )}
       <TaskDetailPanel
         task={activeDetail}
         onClose={() => setDetailTaskId(null)}
