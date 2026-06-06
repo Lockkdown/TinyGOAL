@@ -1,7 +1,8 @@
 project
-.cursorrules
 .cursor
-
+.brain
+AGENTS.md
+docs
 # Logs
 logs
 *.log
