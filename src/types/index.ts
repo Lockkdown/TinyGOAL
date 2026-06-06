@@ -37,6 +37,7 @@ export type ColumnProps = {
   onMoveTask: (id: string, newStatus: Status) => void
   onEditTask: (task: Task) => void
   onDeleteTask: (id: string) => void
+  onAddTask: () => void
 }
 
 export type TaskCardProps = {
@@ -51,6 +52,7 @@ export type BoardProps = {
   moveTask: (id: string, newStatus: Status) => void
   deleteTask: (id: string) => void
   onEditTask: (task: Task) => void
+  onAddTask: () => void
 }
 
 export type ModalProps = {
@@ -70,13 +72,22 @@ export type DashboardProps = {
   stats: TaskStats
 }
 
-export type ActiveView = 'board' | 'dashboard'
+export type ActiveView = 'task' | 'statistic'
 
 export type BoardLayout = 'board' | 'list'
 
-export type HeaderProps = {
+export type SidebarProps = {
   activeView: ActiveView
   onChangeView: (view: ActiveView) => void
+  isCollapsed: boolean
+  onToggleCollapsed: () => void
+}
+
+export type TaskViewProps = {
+  tasks: Task[]
+  moveTask: (id: string, newStatus: Status) => void
+  deleteTask: (id: string) => void
+  onEditTask: (task: Task) => void
   onAddTask: () => void
   boardLayout: BoardLayout
   onChangeBoardLayout: (layout: BoardLayout) => void
@@ -85,6 +96,7 @@ export type HeaderProps = {
 export type ListViewProps = {
   tasks: Task[]
   moveTask: (id: string, newStatus: Status) => void
+  onAddTask: () => void
 }
 
 export type TaskListItemProps = {
@@ -96,6 +108,7 @@ export type BoardViewProps = {
   moveTask: (id: string, newStatus: Status) => void
   deleteTask: (id: string) => void
   onEditTask: (task: Task) => void
+  onAddTask: () => void
 }
 
 export type DashboardViewProps = {

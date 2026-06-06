@@ -68,9 +68,10 @@ const StatusIcon: React.FC<StatusIconProps> = ({ status }) => {
 type ListGroupProps = {
   status: Status
   items: Task[]
+  onAddTask?: () => void
 }
 
-const ListGroup: React.FC<ListGroupProps> = ({ status, items }) => {
+const ListGroup: React.FC<ListGroupProps> = ({ status, items, onAddTask }) => {
   const { setNodeRef, isOver } = useDroppable({ id: status })
 
   return (
@@ -86,6 +87,25 @@ const ListGroup: React.FC<ListGroupProps> = ({ status, items }) => {
         <span className={`text-sm font-medium tabular-nums ${STATUS_COUNT_CLASSES[status]}`}>
           {items.length}
         </span>
+        {onAddTask && (
+          <button
+            type="button"
+            title="New Task"
+            onClick={onAddTask}
+            aria-label="New Task"
+            className="ml-auto rounded p-0.5 text-slate-500 transition-colors hover:bg-slate-300/50 hover:text-slate-700"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="h-4 w-4"
+              aria-hidden="true"
+            >
+              <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+            </svg>
+          </button>
+        )}
       </header>
       <div className="mt-2">
         {items.length === 0 ? (
@@ -102,7 +122,7 @@ const ListGroup: React.FC<ListGroupProps> = ({ status, items }) => {
   )
 }
 
-export const ListView: React.FC<ListViewProps> = ({ tasks, moveTask }) => {
+export const ListView: React.FC<ListViewProps> = ({ tasks, moveTask, onAddTask }) => {
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }))
 
   const handleDragEnd = useCallback(
@@ -126,14 +146,14 @@ export const ListView: React.FC<ListViewProps> = ({ tasks, moveTask }) => {
 
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-      <div
-        id="board-panel"
-        role="tabpanel"
-        aria-labelledby="tab-board"
-        className="mx-auto w-full max-w-6xl space-y-6 px-4 pt-6 pb-8"
-      >
+      <div className="mx-auto w-full max-w-6xl space-y-6 px-4 pt-6 pb-8">
         {tasksByStatus.map(({ status, items }) => (
-          <ListGroup key={status} status={status} items={items} />
+          <ListGroup
+            key={status}
+            status={status}
+            items={items}
+            onAddTask={status === 'Todo' ? onAddTask : undefined}
+          />
         ))}
       </div>
     </DndContext>

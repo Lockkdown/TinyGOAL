@@ -8,9 +8,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ tasks }) => {
 
   return (
     <div
-      id="dashboard-panel"
+      id="statistic-panel"
       role="tabpanel"
-      aria-labelledby="tab-dashboard"
+      aria-labelledby="nav-statistic"
       className="mx-auto w-full max-w-6xl px-4 pb-8"
     >
       <Dashboard stats={stats} />

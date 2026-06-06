@@ -24,6 +24,7 @@ export const Board: React.FC<BoardProps> = ({
   moveTask,
   deleteTask,
   onEditTask,
+  onAddTask,
 }) => {
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }))
 
@@ -62,6 +63,7 @@ export const Board: React.FC<BoardProps> = ({
             onMoveTask={moveTask}
             onEditTask={onEditTask}
             onDeleteTask={deleteTask}
+            onAddTask={onAddTask}
           />
         ))}
       </div>
