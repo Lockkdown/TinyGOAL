@@ -3,6 +3,7 @@ import Sidebar from './components/layout/Sidebar'
 import TaskDetailPanel from './components/TaskDetail/TaskDetailPanel'
 import QuickAddTask from './components/TaskForm/QuickAddTask'
 import { useLocalStorage } from './hooks/useLocalStorage'
+import { useTheme } from './hooks/useTheme'
 import { useTasks } from './hooks/useTasks'
 import type { ActiveView, BoardLayout, Task } from './types'
 import DashboardView from './views/DashboardView'
@@ -17,6 +18,7 @@ export default function App() {
     'expanded',
   )
   const [boardLayout, setBoardLayout] = useLocalStorage<BoardLayout>('tinygoal-view', 'board')
+  const { theme, toggleTheme } = useTheme()
   const { tasks, addTask, updateTask, moveTask, deleteTask } = useTasks()
 
   const activeDetail = tasks.find((t) => t.id === detailTaskId) ?? null
@@ -48,12 +50,14 @@ export default function App() {
   )
 
   return (
-    <div className="flex min-h-screen bg-slate-100">
+    <div className="flex min-h-screen bg-tk-bg">
       <Sidebar
         activeView={activeView}
         onChangeView={setActiveView}
         isCollapsed={isCollapsed}
         onToggleCollapsed={handleToggleCollapsed}
+        theme={theme}
+        onToggleTheme={toggleTheme}
       />
       <main className="flex-1">
         {activeView === 'task' ? (

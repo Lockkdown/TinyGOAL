@@ -21,13 +21,13 @@ export const TaskView: React.FC<TaskViewProps> = ({
       aria-labelledby="nav-task"
       className="flex flex-col"
     >
-      <div className="border-b border-slate-200 bg-white px-4 py-3 shadow-sm">
+      <div className="border-b border-tk-border bg-tk-surface px-4 py-3 shadow-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-900">{t('nav.task')}</h2>
+          <h2 className="text-lg font-semibold text-tk-text-1">{t('nav.task')}</h2>
           <div
             role="group"
             aria-label={t('a11y.boardLayout')}
-            className="flex rounded-lg bg-slate-100 p-1"
+            className="flex rounded-lg bg-tk-bg"
           >
             <button
               type="button"
@@ -36,8 +36,8 @@ export const TaskView: React.FC<TaskViewProps> = ({
               onClick={() => onChangeBoardLayout('board')}
               className={`rounded-md p-1.5 transition-colors ${
                 boardLayout === 'board'
-                  ? 'bg-white text-slate-900 shadow-sm ring-1 ring-slate-200'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-tk-surface text-tk-text-1 shadow-sm ring-1 ring-tk-border'
+                  : 'text-tk-text-2 hover:text-tk-text-1'
               }`}
             >
               <svg
@@ -57,8 +57,8 @@ export const TaskView: React.FC<TaskViewProps> = ({
               onClick={() => onChangeBoardLayout('list')}
               className={`rounded-md p-1.5 transition-colors ${
                 boardLayout === 'list'
-                  ? 'bg-white text-slate-900 shadow-sm ring-1 ring-slate-200'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-tk-surface text-tk-text-1 shadow-sm ring-1 ring-tk-border'
+                  : 'text-tk-text-2 hover:text-tk-text-1'
               }`}
             >
               <svg

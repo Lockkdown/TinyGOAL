@@ -10,22 +10,17 @@ import {
 } from '@dnd-kit/core'
 import React, { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useTheme } from '../../hooks/useTheme'
 import type { ListViewProps, Status, Task } from '../../types'
+import {
+  CHART_BADGE_BG_ALPHA,
+  CHART_BADGE_TEXT_CLASSES,
+  getStatusChartColor,
+  hexWithAlpha,
+} from '../../utils/chartColors'
 import TaskListItem from './TaskListItem'
 
 const STATUSES: Status[] = ['Todo', 'In Progress', 'Done']
-
-const STATUS_HEADER_CLASSES: Record<Status, string> = {
-  Todo: 'bg-slate-200 text-slate-700',
-  'In Progress': 'bg-amber-100 text-amber-800',
-  Done: 'bg-green-100 text-green-800',
-}
-
-const STATUS_COUNT_CLASSES: Record<Status, string> = {
-  Todo: 'text-slate-500',
-  'In Progress': 'text-amber-600/70',
-  Done: 'text-green-600/70',
-}
 
 function isStatus(id: string): id is Status {
   return (STATUSES as readonly string[]).includes(id)
@@ -77,19 +72,22 @@ type ListGroupProps = {
 
 const ListGroup: React.FC<ListGroupProps> = ({ status, items, onAddTask, onOpenTask }) => {
   const { t } = useTranslation()
+  const { theme } = useTheme()
   const { setNodeRef, isOver } = useDroppable({ id: status })
+  const statusColor = getStatusChartColor(status, theme)
 
   return (
     <section
       ref={setNodeRef}
-      className={isOver ? 'rounded-lg ring-2 ring-blue-400 ring-offset-2 ring-offset-slate-100' : ''}
+      className={isOver ? 'rounded-lg ring-2 ring-tk-accent ring-offset-2 ring-offset-tk-bg' : ''}
     >
       <header
-        className={`flex w-full items-center gap-2 rounded-md px-3 py-2 ${STATUS_HEADER_CLASSES[status]}`}
+        className={`flex w-full items-center gap-2 rounded-md px-3 py-2 ${CHART_BADGE_TEXT_CLASSES}`}
+        style={{ backgroundColor: hexWithAlpha(statusColor, CHART_BADGE_BG_ALPHA) }}
       >
         <StatusIcon status={status} />
         <h2 className="text-sm font-semibold">{t(`status.${status}`)}</h2>
-        <span className={`text-sm font-medium tabular-nums ${STATUS_COUNT_CLASSES[status]}`}>
+        <span className="text-sm font-medium tabular-nums opacity-80">
           {items.length}
         </span>
         {onAddTask && (
@@ -98,7 +96,7 @@ const ListGroup: React.FC<ListGroupProps> = ({ status, items, onAddTask, onOpenT
             title={t('a11y.newTask')}
             onClick={onAddTask}
             aria-label={t('a11y.newTask')}
-            className="ml-auto rounded p-0.5 text-slate-500 transition-colors hover:bg-slate-300/50 hover:text-slate-700"
+            className="ml-auto rounded p-0.5 text-tk-text-3 transition-colors hover:bg-tk-surface-hover hover:text-tk-text-2"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -114,7 +112,7 @@ const ListGroup: React.FC<ListGroupProps> = ({ status, items, onAddTask, onOpenT
       </header>
       <div className="mt-2">
         {items.length === 0 ? (
-          <p className="px-1 py-2 text-sm text-slate-500">{t('board.empty')}</p>
+          <p className="px-1 py-2 text-sm text-tk-text-3">{t('board.empty')}</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {items.map((task) => (

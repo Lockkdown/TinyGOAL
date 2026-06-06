@@ -11,6 +11,11 @@ export const en = {
     switchToVi: 'Switch to Vietnamese',
     switchToEn: 'Switch to English',
   },
+  theme: {
+    light: 'Light',
+    dark: 'Dark',
+    toggle: 'Toggle theme',
+  },
   a11y: {
     expandSidebar: 'Expand sidebar',
     collapseSidebar: 'Collapse sidebar',

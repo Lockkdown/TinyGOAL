@@ -12,50 +12,45 @@ type PriorityIconProps = {
   priority: Priority
 }
 
+const PRIORITY_BAR_COUNT: Record<Priority, number> = {
+  Low: 1,
+  Medium: 2,
+  High: 3,
+}
+
+const PRIORITY_BARS = [
+  { x: 2, y: 10, width: 3, height: 4 },
+  { x: 6.5, y: 6, width: 3, height: 8 },
+  { x: 11, y: 2, width: 3, height: 12 },
+] as const
+
+const ACTIVE_BAR_CLASS = 'fill-current'
+const INACTIVE_BAR_CLASS = 'fill-neutral-300 dark:fill-neutral-500'
+
 const PriorityBars: React.FC<{ priority: Priority; className: string }> = ({
   priority,
   className,
 }) => {
-  if (priority === 'Low') {
-    return (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 16 16"
-        fill="currentColor"
-        className={className}
-        aria-hidden="true"
-      >
-        <rect x="2" y="10" width="3" height="4" rx="0.5" />
-      </svg>
-    )
-  }
-
-  if (priority === 'Medium') {
-    return (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 16 16"
-        fill="currentColor"
-        className={className}
-        aria-hidden="true"
-      >
-        <rect x="2" y="10" width="3" height="4" rx="0.5" />
-        <rect x="6.5" y="6" width="3" height="8" rx="0.5" />
-      </svg>
-    )
-  }
+  const activeCount = PRIORITY_BAR_COUNT[priority]
 
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 16 16"
-      fill="currentColor"
       className={className}
       aria-hidden="true"
     >
-      <rect x="2" y="10" width="3" height="4" rx="0.5" />
-      <rect x="6.5" y="6" width="3" height="8" rx="0.5" />
-      <rect x="11" y="2" width="3" height="12" rx="0.5" />
+      {PRIORITY_BARS.map((bar, index) => (
+        <rect
+          key={index}
+          x={bar.x}
+          y={bar.y}
+          width={bar.width}
+          height={bar.height}
+          rx="0.5"
+          className={index < activeCount ? ACTIVE_BAR_CLASS : INACTIVE_BAR_CLASS}
+        />
+      ))}
     </svg>
   )
 }

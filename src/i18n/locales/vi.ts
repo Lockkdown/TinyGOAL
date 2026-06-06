@@ -13,6 +13,11 @@ export const vi = {
     switchToVi: 'Chuyển sang tiếng Việt',
     switchToEn: 'Chuyển sang tiếng Anh',
   },
+  theme: {
+    light: 'Sáng',
+    dark: 'Tối',
+    toggle: 'Đổi giao diện',
+  },
   a11y: {
     expandSidebar: 'Mở rộng thanh bên',
     collapseSidebar: 'Thu gọn thanh bên',

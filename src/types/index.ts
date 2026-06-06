@@ -1,5 +1,3 @@
-import type { ReactNode } from 'react'
-
 export type Category = 'Work' | 'Personal' | 'Study' | 'Other'
 
 export type Priority = 'Low' | 'Medium' | 'High'
@@ -52,13 +50,6 @@ export type BoardProps = {
   onOpenTask: (task: Task) => void
 }
 
-export type ModalProps = {
-  isOpen: boolean
-  onClose: () => void
-  title: string
-  children: ReactNode
-}
-
 export type CompletionPoint = {
   label: string
   date: string
@@ -70,6 +61,8 @@ export type DashboardProps = {
   tasks: Task[]
 }
 
+export type AppTheme = 'light' | 'dark'
+
 export type ActiveView = 'task' | 'statistic'
 
 export type BoardLayout = 'board' | 'list'
@@ -79,6 +72,8 @@ export type SidebarProps = {
   onChangeView: (view: ActiveView) => void
   isCollapsed: boolean
   onToggleCollapsed: () => void
+  theme: AppTheme
+  onToggleTheme: () => void
 }
 
 export type TaskViewProps = {

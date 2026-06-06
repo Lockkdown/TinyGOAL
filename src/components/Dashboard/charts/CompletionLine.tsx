@@ -9,6 +9,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { useTheme } from '../../../hooks/useTheme'
 import type { Task } from '../../../types'
 import { getCompletionSeries, getCompletionWeekSeries } from '../../../utils/helpers'
 
@@ -18,9 +19,20 @@ type CompletionLineProps = {
 
 type RangeMode = 'day' | 'week'
 
+const TOOLTIP_STYLE_DARK = {
+  backgroundColor: '#1e1e1e',
+  border: '1px solid #2d2d2d',
+  color: '#fafafa',
+}
+
 export const CompletionLine: React.FC<CompletionLineProps> = ({ tasks }) => {
   const { t } = useTranslation()
+  const { theme } = useTheme()
   const [range, setRange] = useState<RangeMode>('day')
+
+  const gridColor = theme === 'dark' ? '#2d2d2d' : '#e5e5e5'
+  const axisColor = theme === 'dark' ? '#737373' : '#525252'
+  const lineColor = theme === 'dark' ? '#38bdf8' : '#0ea5e9'
 
   const series = useMemo(() => {
     const raw =
@@ -38,18 +50,18 @@ export const CompletionLine: React.FC<CompletionLineProps> = ({ tasks }) => {
   }, [tasks, range, t])
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+    <div className="rounded-lg border border-tk-border bg-tk-surface p-4 shadow-sm">
       <div className="mb-2 flex items-center justify-between gap-4">
-        <h3 className="text-sm font-medium text-slate-700">{t('dashboard.completionChart')}</h3>
-        <div className="flex rounded-md border border-slate-200 p-0.5 text-xs">
+        <h3 className="text-sm font-medium text-tk-text-2">{t('dashboard.completionChart')}</h3>
+        <div className="flex rounded-md border border-tk-border p-0.5 text-xs">
           <button
             type="button"
             onClick={() => setRange('day')}
             aria-pressed={range === 'day'}
             className={`rounded px-2 py-1 font-medium transition-colors ${
               range === 'day'
-                ? 'bg-slate-900 text-white'
-                : 'text-slate-600 hover:bg-slate-50'
+                ? 'bg-tk-accent text-white'
+                : 'text-tk-text-2 hover:bg-tk-surface-hover'
             }`}
           >
             {t('dashboard.day')}
@@ -60,8 +72,8 @@ export const CompletionLine: React.FC<CompletionLineProps> = ({ tasks }) => {
             aria-pressed={range === 'week'}
             className={`rounded px-2 py-1 font-medium transition-colors ${
               range === 'week'
-                ? 'bg-slate-900 text-white'
-                : 'text-slate-600 hover:bg-slate-50'
+                ? 'bg-tk-accent text-white'
+                : 'text-tk-text-2 hover:bg-tk-surface-hover'
             }`}
           >
             {t('dashboard.week')}
@@ -70,16 +82,16 @@ export const CompletionLine: React.FC<CompletionLineProps> = ({ tasks }) => {
       </div>
       <ResponsiveContainer width="100%" height={240}>
         <LineChart data={series}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-          <XAxis dataKey="label" tick={{ fontSize: 12 }} stroke="#94a3b8" />
-          <YAxis allowDecimals={false} tick={{ fontSize: 12 }} stroke="#94a3b8" />
-          <Tooltip />
+          <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+          <XAxis dataKey="label" tick={{ fontSize: 12 }} stroke={axisColor} />
+          <YAxis allowDecimals={false} tick={{ fontSize: 12 }} stroke={axisColor} />
+          <Tooltip contentStyle={theme === 'dark' ? TOOLTIP_STYLE_DARK : undefined} />
           <Line
             type="monotone"
             dataKey="count"
-            stroke="#2563eb"
+            stroke={lineColor}
             strokeWidth={2}
-            dot={{ r: 4, fill: '#2563eb' }}
+            dot={{ r: 4, fill: lineColor }}
             activeDot={{ r: 6 }}
           />
         </LineChart>
