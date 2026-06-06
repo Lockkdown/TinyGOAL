@@ -1,24 +1,31 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
+import { useTheme } from '../../hooks/useTheme'
 import type { Category } from '../../types'
-
-const CATEGORY_CLASSES: Record<Category, string> = {
-  Work: 'bg-blue-100 text-blue-700',
-  Personal: 'bg-purple-100 text-purple-700',
-  Study: 'bg-amber-100 text-amber-700',
-  Other: 'bg-slate-100 text-slate-600',
-}
+import {
+  CHART_BADGE_BG_ALPHA,
+  CHART_BADGE_TEXT_CLASSES,
+  getCategoryChartColor,
+  hexWithAlpha,
+} from '../../utils/chartColors'
 
 type CategoryBadgeProps = {
   category: Category
 }
 
 export const CategoryBadge: React.FC<CategoryBadgeProps> = ({ category }) => {
+  const { t } = useTranslation()
+  const { theme } = useTheme()
+  const label = t(`category.${category}`)
+  const chartColor = getCategoryChartColor(category, theme)
+
   return (
     <span
-      className={`inline-flex shrink-0 rounded px-1.5 py-0.5 text-xs font-medium ${CATEGORY_CLASSES[category]}`}
-      aria-label={category}
+      className={`inline-flex shrink-0 rounded px-1.5 py-0.5 text-xs font-medium ${CHART_BADGE_TEXT_CLASSES}`}
+      style={{ backgroundColor: hexWithAlpha(chartColor, CHART_BADGE_BG_ALPHA) }}
+      aria-label={label}
     >
-      {category}
+      {label}
     </span>
   )
 }

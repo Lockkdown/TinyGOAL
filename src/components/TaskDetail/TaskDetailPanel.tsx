@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { Category, Priority, Status, TaskDetailPanelProps } from '../../types'
 
 const STATUSES: Status[] = ['Todo', 'In Progress', 'Done']
@@ -9,12 +10,19 @@ type TaskDetailPanelContentProps = Omit<TaskDetailPanelProps, 'task'> & {
   task: NonNullable<TaskDetailPanelProps['task']>
 }
 
+const TEXT_INPUT_CLASS =
+  'border-0 bg-transparent outline-none focus:ring-0 text-neutral-900 placeholder:text-neutral-400 dark:text-neutral-100 dark:placeholder:text-neutral-500'
+
+const SELECT_CLASS =
+  'rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-1.5 text-sm text-neutral-900 focus:border-tk-accent focus:outline-none focus:ring-1 focus:ring-tk-accent dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-100'
+
 const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
   task,
   onClose,
   onSave,
   onDelete,
 }) => {
+  const { t } = useTranslation()
   const [entered, setEntered] = useState(false)
   const [title, setTitle] = useState(task.title)
   const [description, setDescription] = useState(task.description)
@@ -62,19 +70,19 @@ const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
         aria-modal="true"
         aria-labelledby="detail-title"
         onClick={(e) => e.stopPropagation()}
-        className={`flex max-h-[85vh] w-full max-w-lg transform flex-col overflow-hidden rounded-2xl bg-white shadow-2xl transition-all duration-200 ease-out motion-reduce:transition-none ${
+        className={`flex max-h-[85vh] w-full max-w-lg transform flex-col overflow-hidden rounded-2xl bg-tk-surface shadow-2xl transition-all duration-200 ease-out motion-reduce:transition-none [color-scheme:light] dark:[color-scheme:dark] ${
           entered ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
         }`}
       >
-        <div className="flex items-center gap-2 border-b border-slate-200 px-4 py-3">
+        <div className="flex items-center gap-2 border-b border-tk-border px-4 py-3">
           <input
             id="detail-title"
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             onBlur={handleTitleBlur}
-            className="min-w-0 flex-1 border-0 bg-transparent text-xl font-semibold text-slate-900 outline-none placeholder:text-slate-400 focus:ring-0"
-            placeholder="Task title"
+            className={`min-w-0 flex-1 text-xl font-semibold ${TEXT_INPUT_CLASS}`}
+            placeholder={t('form.taskTitlePlaceholder')}
           />
           <button
             type="button"
@@ -82,8 +90,8 @@ const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
               onDelete(task.id)
               onClose()
             }}
-            aria-label="Delete task"
-            className="shrink-0 rounded p-1.5 text-red-500 hover:bg-red-50"
+            aria-label={t('a11y.deleteTask')}
+            className="shrink-0 rounded p-1.5 text-red-500 transition-colors hover:bg-red-500/10"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -102,8 +110,8 @@ const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close"
-            className="shrink-0 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+            aria-label={t('a11y.close')}
+            className="shrink-0 rounded p-1 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700 dark:text-neutral-500 dark:hover:bg-neutral-800 dark:hover:text-neutral-300"
           >
             <span className="text-xl leading-none">&times;</span>
           </button>
@@ -115,26 +123,26 @@ const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
             onChange={(e) => setDescription(e.target.value)}
             onBlur={handleDescriptionBlur}
             rows={4}
-            placeholder="Add a description..."
-            className="w-full resize-none border-0 bg-transparent text-sm leading-relaxed text-slate-700 outline-none placeholder:text-slate-400 focus:ring-0"
+            placeholder={t('form.descriptionPlaceholder')}
+            className={`w-full resize-none text-sm leading-relaxed ${TEXT_INPUT_CLASS}`}
           />
 
-          <hr className="border-slate-100" />
+          <hr className="border-tk-border-subtle" />
 
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between gap-4">
-              <label htmlFor="detail-status" className="shrink-0 text-sm font-medium text-slate-600">
-                Status
+              <label htmlFor="detail-status" className="shrink-0 text-sm font-medium text-neutral-600 dark:text-neutral-300">
+                {t('detail.status')}
               </label>
               <select
                 id="detail-status"
                 value={task.status}
                 onChange={(e) => onSave(task.id, { status: e.target.value as Status })}
-                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className={SELECT_CLASS}
               >
                 {STATUSES.map((s) => (
                   <option key={s} value={s}>
-                    {s}
+                    {t(`status.${s}`)}
                   </option>
                 ))}
               </select>
@@ -143,19 +151,19 @@ const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
             <div className="flex items-center justify-between gap-4">
               <label
                 htmlFor="detail-priority"
-                className="shrink-0 text-sm font-medium text-slate-600"
+                className="shrink-0 text-sm font-medium text-neutral-600 dark:text-neutral-300"
               >
-                Priority
+                {t('detail.priority')}
               </label>
               <select
                 id="detail-priority"
                 value={task.priority}
                 onChange={(e) => onSave(task.id, { priority: e.target.value as Priority })}
-                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className={SELECT_CLASS}
               >
                 {PRIORITIES.map((p) => (
                   <option key={p} value={p}>
-                    {p}
+                    {t(`priority.${p}`)}
                   </option>
                 ))}
               </select>
@@ -164,19 +172,19 @@ const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
             <div className="flex items-center justify-between gap-4">
               <label
                 htmlFor="detail-category"
-                className="shrink-0 text-sm font-medium text-slate-600"
+                className="shrink-0 text-sm font-medium text-neutral-600 dark:text-neutral-300"
               >
-                Category
+                {t('detail.category')}
               </label>
               <select
                 id="detail-category"
                 value={task.category}
                 onChange={(e) => onSave(task.id, { category: e.target.value as Category })}
-                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className={SELECT_CLASS}
               >
                 {CATEGORIES.map((c) => (
                   <option key={c} value={c}>
-                    {c}
+                    {t(`category.${c}`)}
                   </option>
                 ))}
               </select>
@@ -185,16 +193,16 @@ const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
             <div className="flex items-center justify-between gap-4">
               <label
                 htmlFor="detail-deadline"
-                className="shrink-0 text-sm font-medium text-slate-600"
+                className="shrink-0 text-sm font-medium text-neutral-600 dark:text-neutral-300"
               >
-                Deadline
+                {t('detail.deadline')}
               </label>
               <input
                 id="detail-deadline"
                 type="date"
                 value={task.deadline}
                 onChange={(e) => onSave(task.id, { deadline: e.target.value })}
-                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className={SELECT_CLASS}
               />
             </div>
           </div>

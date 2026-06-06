@@ -1,3 +1,54 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*
+  Theme tokens — RGB tuple (space-separated, NO commas, NO #).
+  Lý do tuple thay vì HEX: Tailwind map qua rgb(var(--x) / <alpha-value>)
+  để opacity modifier (bg-tk-accent/10, bg-tk-surface/80) hoạt động.
+  Tông: Neutral gray (không ánh xanh) + Sky Blue accent.
+*/
+
+@layer base {
+  :root {
+    --tk-bg: 250 250 250;          /* neutral-50 */
+    --tk-surface: 255 255 255;     /* pure white */
+    --tk-surface-hover: 245 245 245;
+    --tk-border: 229 229 229;      /* neutral-200 */
+    --tk-border-subtle: 245 245 245;
+    --tk-text-1: 23 23 23;         /* neutral-900 — near black */
+    --tk-text-2: 82 82 82;         /* neutral-600 */
+    --tk-text-3: 163 163 163;      /* neutral-400 */
+    --tk-text-4: 212 212 212;      /* neutral-300 */
+    --tk-accent-bg: 224 242 254;   /* sky-100 */
+    --tk-accent: 14 165 233;       /* sky-500 */
+    --tk-accent-hover: 2 132 199;  /* sky-600 */
+  }
+
+  .dark {
+    --tk-bg: 18 18 18;             /* neutral-950 — đen xám truyền thống */
+    --tk-surface: 30 30 30;        /* neutral-850 */
+    --tk-surface-hover: 45 45 45;
+    --tk-border: 45 45 45;         /* neutral-800 */
+    --tk-border-subtle: 30 30 30;
+    --tk-text-1: 250 250 250;      /* neutral-50 — near white */
+    --tk-text-2: 163 163 163;      /* neutral-400 */
+    --tk-text-3: 115 115 115;      /* neutral-500 */
+    --tk-text-4: 82 82 82;         /* neutral-600 */
+    --tk-accent-bg: 12 74 110;     /* sky-950 wash */
+    --tk-accent: 56 189 248;       /* sky-400 */
+    --tk-accent-hover: 125 211 252;/* sky-300 */
+  }
+
+  html,
+  body,
+  #root {
+    background-color: rgb(var(--tk-bg));
+    color: rgb(var(--tk-text-1));
+  }
+
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}

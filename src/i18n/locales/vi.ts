@@ -1,0 +1,86 @@
+import { en } from './en'
+
+export const vi = {
+  app: { name: 'TinyGOAL' },
+  nav: {
+    task: 'Công việc',
+    statistic: 'Thống kê',
+    switchView: 'Chuyển chế độ xem',
+  },
+  lang: {
+    vi: 'VI',
+    en: 'EN',
+    switchToVi: 'Chuyển sang tiếng Việt',
+    switchToEn: 'Chuyển sang tiếng Anh',
+  },
+  theme: {
+    light: 'Sáng',
+    dark: 'Tối',
+    toggle: 'Đổi giao diện',
+  },
+  a11y: {
+    expandSidebar: 'Mở rộng thanh bên',
+    collapseSidebar: 'Thu gọn thanh bên',
+    boardLayout: 'Bố cục bảng',
+    boardView: 'Chế độ bảng',
+    listView: 'Chế độ danh sách',
+    newTask: 'Task mới',
+    close: 'Đóng',
+    deleteTask: 'Xóa task',
+    dragTask: 'Kéo "{{title}}"',
+    status: 'Trạng thái',
+    priority: 'Ưu tiên',
+    category: 'Danh mục',
+    deadline: 'Hạn chót',
+  },
+  status: {
+    Todo: 'Cần làm',
+    'In Progress': 'Đang làm',
+    Done: 'Hoàn thành',
+  },
+  priority: {
+    Low: 'Thấp',
+    Medium: 'Trung bình',
+    High: 'Cao',
+  },
+  category: {
+    Work: 'Công việc',
+    Personal: 'Cá nhân',
+    Study: 'Học tập',
+    Other: 'Khác',
+  },
+  board: {
+    empty: 'Chưa có task',
+  },
+  form: {
+    newTask: 'Task mới',
+    createTask: 'Tạo task',
+    titlePlaceholder: 'Cần làm gì?',
+    descriptionPlaceholder: 'Thêm mô tả...',
+    taskTitlePlaceholder: 'Tiêu đề task',
+  },
+  detail: {
+    status: 'Trạng thái',
+    priority: 'Ưu tiên',
+    category: 'Danh mục',
+    deadline: 'Hạn chót',
+  },
+  dashboard: {
+    overview: 'Tổng quan',
+    totalTasks: 'Tổng task',
+    todo: 'Cần làm',
+    inProgress: 'Đang làm',
+    done: 'Hoàn thành',
+    overdue: 'Quá hạn',
+    completionRate: 'Tỷ lệ hoàn thành',
+    statusChart: 'Task theo trạng thái',
+    priorityChart: 'Task theo ưu tiên',
+    completionChart: 'Biểu đồ hoàn thành gần đây',
+    day: 'Ngày',
+    week: 'Tuần',
+  },
+  chart: {
+    today: 'Hôm nay',
+    thisWeek: 'Tuần này',
+  },
+} satisfies typeof en

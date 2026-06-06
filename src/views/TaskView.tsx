@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import ListView from '../components/List/ListView'
 import type { TaskViewProps } from '../types'
 import BoardView from './BoardView'
@@ -11,6 +12,8 @@ export const TaskView: React.FC<TaskViewProps> = ({
   boardLayout,
   onChangeBoardLayout,
 }) => {
+  const { t } = useTranslation()
+
   return (
     <div
       id="task-panel"
@@ -18,23 +21,23 @@ export const TaskView: React.FC<TaskViewProps> = ({
       aria-labelledby="nav-task"
       className="flex flex-col"
     >
-      <div className="border-b border-slate-200 bg-white px-4 py-3 shadow-sm">
+      <div className="border-b border-tk-border bg-tk-surface px-4 py-3 shadow-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-900">Task</h2>
+          <h2 className="text-lg font-semibold text-tk-text-1">{t('nav.task')}</h2>
           <div
             role="group"
-            aria-label="Board layout"
-            className="flex rounded-lg bg-slate-100 p-1"
+            aria-label={t('a11y.boardLayout')}
+            className="flex rounded-lg bg-tk-bg"
           >
             <button
               type="button"
-              aria-label="Board view"
+              aria-label={t('a11y.boardView')}
               aria-pressed={boardLayout === 'board'}
               onClick={() => onChangeBoardLayout('board')}
               className={`rounded-md p-1.5 transition-colors ${
                 boardLayout === 'board'
-                  ? 'bg-white text-slate-900 shadow-sm ring-1 ring-slate-200'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-tk-surface text-tk-text-1 shadow-sm ring-1 ring-tk-border'
+                  : 'text-tk-text-2 hover:text-tk-text-1'
               }`}
             >
               <svg
@@ -49,13 +52,13 @@ export const TaskView: React.FC<TaskViewProps> = ({
             </button>
             <button
               type="button"
-              aria-label="List view"
+              aria-label={t('a11y.listView')}
               aria-pressed={boardLayout === 'list'}
               onClick={() => onChangeBoardLayout('list')}
               className={`rounded-md p-1.5 transition-colors ${
                 boardLayout === 'list'
-                  ? 'bg-white text-slate-900 shadow-sm ring-1 ring-slate-200'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-tk-surface text-tk-text-1 shadow-sm ring-1 ring-tk-border'
+                  : 'text-tk-text-2 hover:text-tk-text-1'
               }`}
             >
               <svg

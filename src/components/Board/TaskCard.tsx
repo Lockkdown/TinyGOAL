@@ -21,11 +21,11 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   const [initialStatus] = useState(task.status)
   const skipDoneTransition = initialStatus === 'Done' && isDone
 
-  const deadlineClasses = isOverdue(task) ? OVERDUE_CLASS : 'text-slate-600'
+  const deadlineClasses = isOverdue(task) ? OVERDUE_CLASS : 'text-tk-text-2'
 
   const cardDoneClasses = isDone
-    ? 'border-slate-100 bg-slate-50 opacity-70 shadow-none'
-    : 'border-slate-200 bg-white shadow-sm'
+    ? 'border-tk-border-subtle bg-tk-surface-hover opacity-70 shadow-none'
+    : 'border-tk-border bg-tk-surface shadow-sm'
 
   const cardTransitionClasses = skipDoneTransition
     ? ''
@@ -33,14 +33,14 @@ export const TaskCard: React.FC<TaskCardProps> = ({
 
   const titleStrikeClasses = skipDoneTransition
     ? isDone
-      ? 'text-slate-500 after:w-full'
-      : 'text-slate-900 after:w-0'
+      ? 'text-tk-text-3 after:w-full'
+      : 'text-tk-text-1 after:w-0'
     : `transition-opacity duration-300 motion-reduce:transition-none ${
-        isDone ? 'text-slate-500 after:w-full' : 'text-slate-900 after:w-0'
+        isDone ? 'text-tk-text-3 after:w-full' : 'text-tk-text-1 after:w-0'
       } after:transition-[width] after:duration-300 after:ease-out motion-reduce:after:transition-none`
 
   const overlayClasses = isOverlay
-    ? 'cursor-grabbing shadow-lg ring-1 ring-slate-200 pointer-events-none'
+    ? 'cursor-grabbing shadow-lg ring-1 ring-tk-border pointer-events-none'
     : ''
 
   const draggingClasses = !isOverlay && isDragging ? 'opacity-40' : ''
@@ -67,7 +67,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
             <PriorityIcon priority={task.priority} />
           </div>
         </div>
-        <p className={`text-xs ${isDone ? 'text-slate-400' : deadlineClasses}`}>
+        <p className={`text-xs ${isDone ? 'text-tk-text-4' : deadlineClasses}`}>
           {formatDeadline(task.deadline)}
         </p>
       </div>

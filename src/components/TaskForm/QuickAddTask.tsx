@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { Category, Priority, Status, Task } from '../../types'
 import { todayDateKey } from '../../utils/helpers'
 
@@ -6,12 +7,19 @@ const STATUSES: Status[] = ['Todo', 'In Progress', 'Done']
 const CATEGORIES: Category[] = ['Work', 'Personal', 'Study', 'Other']
 const PRIORITIES: Priority[] = ['Low', 'Medium', 'High']
 
+const TEXT_INPUT_CLASS =
+  'w-full border-0 bg-transparent outline-none focus:ring-0 text-neutral-900 placeholder:text-neutral-400 dark:text-neutral-100 dark:placeholder:text-neutral-500'
+
+const PILL_FIELD_CLASS =
+  'rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-xs font-medium text-neutral-900 focus:border-tk-accent focus:outline-none focus:ring-1 focus:ring-tk-accent dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-100'
+
 export type QuickAddTaskProps = {
   onSubmit: (data: Omit<Task, 'id' | 'createdAt'>) => void
   onClose: () => void
 }
 
 export const QuickAddTask: React.FC<QuickAddTaskProps> = ({ onSubmit, onClose }) => {
+  const { t } = useTranslation()
   const [entered, setEntered] = useState(false)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -60,19 +68,19 @@ export const QuickAddTask: React.FC<QuickAddTaskProps> = ({ onSubmit, onClose })
         aria-modal="true"
         aria-labelledby="quick-add-title"
         onClick={(e) => e.stopPropagation()}
-        className={`flex w-full max-w-lg transform flex-col overflow-hidden rounded-2xl bg-white shadow-2xl transition-all duration-200 ease-out motion-reduce:transition-none ${
+        className={`flex w-full max-w-lg transform flex-col overflow-hidden rounded-2xl bg-tk-surface shadow-2xl transition-all duration-200 ease-out motion-reduce:transition-none [color-scheme:light] dark:[color-scheme:dark] ${
           entered ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
         }`}
       >
-        <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
-          <h2 id="quick-add-title" className="text-sm font-semibold text-slate-900">
-            New Task
+        <div className="flex items-center justify-between border-b border-tk-border px-4 py-3">
+          <h2 id="quick-add-title" className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+            {t('form.newTask')}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close"
-            className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+            aria-label={t('a11y.close')}
+            className="rounded p-1 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700 dark:text-neutral-500 dark:hover:bg-neutral-800 dark:hover:text-neutral-300"
           >
             <span className="text-xl leading-none">&times;</span>
           </button>
@@ -83,29 +91,29 @@ export const QuickAddTask: React.FC<QuickAddTaskProps> = ({ onSubmit, onClose })
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="What needs to be done?"
+            placeholder={t('form.titlePlaceholder')}
             autoFocus
-            className="w-full border-0 bg-transparent text-2xl font-semibold text-slate-900 outline-none placeholder:text-slate-300 focus:ring-0"
+            className={`${TEXT_INPUT_CLASS} text-2xl font-semibold`}
           />
 
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
-            placeholder="Add a description..."
-            className="w-full resize-none border-0 bg-transparent text-sm leading-relaxed text-slate-700 outline-none placeholder:text-slate-400 focus:ring-0"
+            placeholder={t('form.descriptionPlaceholder')}
+            className={`${TEXT_INPUT_CLASS} resize-none text-sm leading-relaxed`}
           />
 
           <div className="flex flex-wrap items-center gap-2">
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value as Status)}
-              aria-label="Status"
-              className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              aria-label={t('a11y.status')}
+              className={PILL_FIELD_CLASS}
             >
               {STATUSES.map((s) => (
                 <option key={s} value={s}>
-                  {s}
+                  {t(`status.${s}`)}
                 </option>
               ))}
             </select>
@@ -113,12 +121,12 @@ export const QuickAddTask: React.FC<QuickAddTaskProps> = ({ onSubmit, onClose })
             <select
               value={priority}
               onChange={(e) => setPriority(e.target.value as Priority)}
-              aria-label="Priority"
-              className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              aria-label={t('a11y.priority')}
+              className={PILL_FIELD_CLASS}
             >
               {PRIORITIES.map((p) => (
                 <option key={p} value={p}>
-                  {p}
+                  {t(`priority.${p}`)}
                 </option>
               ))}
             </select>
@@ -126,12 +134,12 @@ export const QuickAddTask: React.FC<QuickAddTaskProps> = ({ onSubmit, onClose })
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value as Category)}
-              aria-label="Category"
-              className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              aria-label={t('a11y.category')}
+              className={PILL_FIELD_CLASS}
             >
               {CATEGORIES.map((c) => (
                 <option key={c} value={c}>
-                  {c}
+                  {t(`category.${c}`)}
                 </option>
               ))}
             </select>
@@ -140,19 +148,19 @@ export const QuickAddTask: React.FC<QuickAddTaskProps> = ({ onSubmit, onClose })
               type="date"
               value={deadline}
               onChange={(e) => setDeadline(e.target.value)}
-              aria-label="Deadline"
-              className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              aria-label={t('a11y.deadline')}
+              className={PILL_FIELD_CLASS}
             />
           </div>
 
-          <div className="flex justify-end border-t border-slate-100 pt-4">
+          <div className="flex justify-end border-t border-tk-border-subtle pt-4">
             <button
               type="button"
               onClick={handleSubmit}
               disabled={isTitleEmpty}
-              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-lg bg-tk-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-tk-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Create task
+              {t('form.createTask')}
             </button>
           </div>
         </div>
