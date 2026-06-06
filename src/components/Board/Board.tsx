@@ -53,19 +53,17 @@ export const Board: React.FC<BoardProps> = ({
 
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-      <div className="mx-auto w-full max-w-6xl px-4 py-6">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-4">
-          {columns.map(({ status, tasks }) => (
-            <Column
-              key={status}
-              status={status}
-              tasks={tasks}
-              onMoveTask={moveTask}
-              onEditTask={onEditTask}
-              onDeleteTask={deleteTask}
-            />
-          ))}
-        </div>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-4">
+        {columns.map(({ status, tasks }) => (
+          <Column
+            key={status}
+            status={status}
+            tasks={tasks}
+            onMoveTask={moveTask}
+            onEditTask={onEditTask}
+            onDeleteTask={deleteTask}
+          />
+        ))}
       </div>
     </DndContext>
   )

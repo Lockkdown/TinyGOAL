@@ -69,3 +69,22 @@ export type TaskFormProps = {
 export type DashboardProps = {
   stats: TaskStats
 }
+
+export type ActiveView = 'board' | 'dashboard'
+
+export type HeaderProps = {
+  activeView: ActiveView
+  onChangeView: (view: ActiveView) => void
+  onAddTask: () => void
+}
+
+export type BoardViewProps = {
+  tasks: Task[]
+  moveTask: (id: string, newStatus: Status) => void
+  deleteTask: (id: string) => void
+  onEditTask: (task: Task) => void
+}
+
+export type DashboardViewProps = {
+  tasks: Task[]
+}
