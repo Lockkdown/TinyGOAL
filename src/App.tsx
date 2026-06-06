@@ -2,9 +2,7 @@ import { useCallback, useMemo, useState } from 'react'
 import type { Task } from './types'
 import Board from './components/Board/Board'
 import Dashboard from './components/Dashboard/Dashboard'
-import FilterBar from './components/shared/FilterBar'
 import Modal from './components/shared/Modal'
-import SearchBar from './components/shared/SearchBar'
 import TaskForm from './components/TaskForm/TaskForm'
 import { useTasks } from './hooks/useTasks'
 import { getStats } from './utils/helpers'
@@ -16,18 +14,7 @@ export default function App() {
   const [editingTask, setEditingTask] = useState<Task | null>(null)
   const [activeView, setActiveView] = useState<ActiveView>('board')
 
-  const {
-    tasks,
-    filteredTasks,
-    filters,
-    addTask,
-    updateTask,
-    moveTask,
-    deleteTask,
-    setSearch,
-    setFilter,
-    clearFilters,
-  } = useTasks()
+  const { tasks, addTask, updateTask, moveTask, deleteTask } = useTasks()
 
   const stats = useMemo(() => getStats(tasks), [tasks])
 
@@ -111,23 +98,12 @@ export default function App() {
         </div>
       </header>
       {activeView === 'board' ? (
-        <>
-          <div
-            id="board-panel"
-            role="tabpanel"
-            aria-labelledby="tab-board"
-            className="mx-auto w-full max-w-6xl space-y-4 px-4 pt-6"
-          >
-            <SearchBar value={filters.search} onChange={setSearch} />
-            <FilterBar filters={filters} onFilterChange={setFilter} onClearFilters={clearFilters} />
-          </div>
-          <Board
-            filteredTasks={filteredTasks}
-            moveTask={moveTask}
-            deleteTask={deleteTask}
-            onEditTask={handleEditTask}
-          />
-        </>
+        <Board
+          tasks={tasks}
+          moveTask={moveTask}
+          deleteTask={deleteTask}
+          onEditTask={handleEditTask}
+        />
       ) : (
         <div
           id="dashboard-panel"

@@ -20,7 +20,7 @@ function tasksForStatus(tasks: Task[], status: Status): Task[] {
 }
 
 export const Board: React.FC<BoardProps> = ({
-  filteredTasks,
+  tasks,
   moveTask,
   deleteTask,
   onEditTask,
@@ -35,20 +35,20 @@ export const Board: React.FC<BoardProps> = ({
       const overId = String(over.id)
       if (!isColumnStatus(overId)) return
       const targetStatus = overId
-      const task = filteredTasks.find((t) => t.id === taskId)
+      const task = tasks.find((t) => t.id === taskId)
       if (!task || task.status === targetStatus) return
       moveTask(taskId, targetStatus)
     },
-    [filteredTasks, moveTask],
+    [tasks, moveTask],
   )
 
   const columns = useMemo(
     () =>
       COLUMN_ORDER.map((status) => ({
         status,
-        tasks: tasksForStatus(filteredTasks, status),
+        tasks: tasksForStatus(tasks, status),
       })),
-    [filteredTasks],
+    [tasks],
   )
 
   return (

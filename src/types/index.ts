@@ -31,13 +31,6 @@ export type TaskStats = {
   }
 }
 
-export type FilterState = {
-  search: string
-  category: Category | 'All'
-  priority: Priority | 'All'
-  status: Status | 'All'
-}
-
 export type ColumnProps = {
   status: Status
   tasks: Task[]
@@ -54,7 +47,7 @@ export type TaskCardProps = {
 }
 
 export type BoardProps = {
-  filteredTasks: Task[]
+  tasks: Task[]
   moveTask: (id: string, newStatus: Status) => void
   deleteTask: (id: string) => void
   onEditTask: (task: Task) => void
@@ -71,17 +64,6 @@ export type TaskFormProps = {
   initialData?: Task
   onSubmit: (data: Omit<Task, 'id' | 'createdAt'>) => void
   onCancel: () => void
-}
-
-export type SearchBarProps = {
-  value: string
-  onChange: (value: string) => void
-}
-
-export type FilterBarProps = {
-  filters: FilterState
-  onFilterChange: (key: keyof FilterState, value: string) => void
-  onClearFilters: () => void
 }
 
 export type DashboardProps = {
