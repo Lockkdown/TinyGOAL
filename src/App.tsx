@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
 import Sidebar from './components/layout/Sidebar'
+import SettingsPanel from './components/Settings/SettingsPanel'
 import TaskDetailPanel from './components/TaskDetail/TaskDetailPanel'
 import QuickAddTask from './components/TaskForm/QuickAddTask'
 import { useLocalStorage } from './hooks/useLocalStorage'
@@ -11,6 +12,7 @@ import TaskView from './views/TaskView'
 
 export default function App() {
   const [isFormOpen, setIsFormOpen] = useState(false)
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [detailTaskId, setDetailTaskId] = useState<string | null>(null)
   const [activeView, setActiveView] = useState<ActiveView>('task')
   const [sidebarState, setSidebarState] = useLocalStorage<'expanded' | 'collapsed'>(
@@ -50,14 +52,13 @@ export default function App() {
   )
 
   return (
-    <div className="flex min-h-screen bg-tk-bg">
+    <div className="flex min-h-screen items-start bg-tk-bg">
       <Sidebar
         activeView={activeView}
         onChangeView={setActiveView}
         isCollapsed={isCollapsed}
         onToggleCollapsed={handleToggleCollapsed}
-        theme={theme}
-        onToggleTheme={toggleTheme}
+        onOpenSettings={() => setIsSettingsOpen(true)}
       />
       <main className="flex-1">
         {activeView === 'task' ? (
@@ -85,6 +86,13 @@ export default function App() {
           setDetailTaskId(null)
         }}
       />
+      {isSettingsOpen && (
+        <SettingsPanel
+          onClose={() => setIsSettingsOpen(false)}
+          theme={theme}
+          onToggleTheme={toggleTheme}
+        />
+      )}
     </div>
   )
 }

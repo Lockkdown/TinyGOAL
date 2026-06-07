@@ -63,7 +63,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ stats, tasks }) => {
             {stats.completionRate}%
           </span>
         </div>
-        <div className="h-3 w-full overflow-hidden rounded-full bg-neutral-200 dark:bg-neutral-800">
+        <div className="h-3 w-full overflow-hidden rounded-full bg-neutral-300 dark:bg-neutral-800">
           <div
             className="h-full rounded-full"
             style={{

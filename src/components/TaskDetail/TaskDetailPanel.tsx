@@ -1,17 +1,28 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { Category, Priority, Status, TaskDetailPanelProps } from '../../types'
-
-const STATUSES: Status[] = ['Todo', 'In Progress', 'Done']
-const CATEGORIES: Category[] = ['Work', 'Personal', 'Study', 'Other']
-const PRIORITIES: Priority[] = ['Low', 'Medium', 'High']
+import { useTheme } from '../../hooks/useTheme'
+import type { TaskDetailPanelProps } from '../../types'
+import {
+  getCategoryChartColor,
+  getPriorityPillColor,
+  getStatusChartColor,
+} from '../../utils/chartColors'
+import {
+  CATEGORY_OPTIONS,
+  PRIORITY_OPTIONS,
+  STATUS_OPTIONS,
+} from '../shared/fieldOptions'
+import { StatusIcon } from '../shared/icons'
+import { PriorityIcon } from '../shared/PriorityIcon'
+import { ModalPortal } from '../shared/ModalPortal'
+import { SegmentedField } from '../shared/SegmentedField'
 
 type TaskDetailPanelContentProps = Omit<TaskDetailPanelProps, 'task'> & {
   task: NonNullable<TaskDetailPanelProps['task']>
 }
 
 const TEXT_INPUT_CLASS =
-  'border-0 bg-transparent outline-none focus:ring-0 text-neutral-900 placeholder:text-neutral-400 dark:text-neutral-100 dark:placeholder:text-neutral-500'
+  'border-0 bg-transparent outline-none focus:ring-0 text-neutral-900 placeholder:text-neutral-500 dark:text-neutral-100 dark:placeholder:text-neutral-500'
 
 const SELECT_CLASS =
   'rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-1.5 text-sm text-neutral-900 focus:border-tk-accent focus:outline-none focus:ring-1 focus:ring-tk-accent dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-100'
@@ -23,6 +34,7 @@ const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
   onDelete,
 }) => {
   const { t } = useTranslation()
+  const { theme } = useTheme()
   const [entered, setEntered] = useState(false)
   const [title, setTitle] = useState(task.title)
   const [description, setDescription] = useState(task.description)
@@ -59,21 +71,22 @@ const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
   }
 
   return (
-    <div
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm transition-opacity duration-200 motion-reduce:transition-none ${
-        entered ? 'opacity-100' : 'opacity-0'
-      }`}
-      onClick={onClose}
-    >
+    <ModalPortal>
       <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="detail-title"
-        onClick={(e) => e.stopPropagation()}
-        className={`flex max-h-[85vh] w-full max-w-lg transform flex-col overflow-hidden rounded-2xl bg-tk-surface shadow-2xl transition-all duration-200 ease-out motion-reduce:transition-none [color-scheme:light] dark:[color-scheme:dark] ${
-          entered ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
+        className={`fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm transition-opacity duration-200 motion-reduce:transition-none ${
+          entered ? 'opacity-100' : 'opacity-0'
         }`}
+        onClick={onClose}
       >
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="detail-title"
+          onClick={(e) => e.stopPropagation()}
+          className={`flex max-h-[85vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-tk-surface shadow-2xl transition-opacity duration-200 ease-out motion-reduce:transition-none [color-scheme:light] dark:[color-scheme:dark] ${
+            entered ? 'opacity-100' : 'opacity-0'
+          }`}
+        >
         <div className="flex items-center gap-2 border-b border-tk-border px-4 py-3">
           <input
             id="detail-title"
@@ -131,69 +144,53 @@ const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
 
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between gap-4">
-              <label htmlFor="detail-status" className="shrink-0 text-sm font-medium text-neutral-600 dark:text-neutral-300">
+              <span className="shrink-0 text-sm font-medium text-neutral-800 dark:text-neutral-300">
                 {t('detail.status')}
-              </label>
-              <select
-                id="detail-status"
+              </span>
+              <SegmentedField
                 value={task.status}
-                onChange={(e) => onSave(task.id, { status: e.target.value as Status })}
-                className={SELECT_CLASS}
-              >
-                {STATUSES.map((s) => (
-                  <option key={s} value={s}>
-                    {t(`status.${s}`)}
-                  </option>
-                ))}
-              </select>
+                options={STATUS_OPTIONS}
+                onChange={(v) => onSave(task.id, { status: v })}
+                getLabel={(s) => t(`status.${s}`)}
+                ariaLabel={t('a11y.status')}
+                getColor={(s) => getStatusChartColor(s, theme)}
+                renderIcon={(s) => <StatusIcon status={s} />}
+              />
             </div>
 
             <div className="flex items-center justify-between gap-4">
-              <label
-                htmlFor="detail-priority"
-                className="shrink-0 text-sm font-medium text-neutral-600 dark:text-neutral-300"
-              >
+              <span className="shrink-0 text-sm font-medium text-neutral-800 dark:text-neutral-300">
                 {t('detail.priority')}
-              </label>
-              <select
-                id="detail-priority"
+              </span>
+              <SegmentedField
                 value={task.priority}
-                onChange={(e) => onSave(task.id, { priority: e.target.value as Priority })}
-                className={SELECT_CLASS}
-              >
-                {PRIORITIES.map((p) => (
-                  <option key={p} value={p}>
-                    {t(`priority.${p}`)}
-                  </option>
-                ))}
-              </select>
+                options={PRIORITY_OPTIONS}
+                onChange={(v) => onSave(task.id, { priority: v })}
+                getLabel={(p) => t(`priority.${p}`)}
+                ariaLabel={t('a11y.priority')}
+                getColor={(p) => getPriorityPillColor(p, theme)}
+                renderIcon={(p) => <PriorityIcon priority={p} />}
+              />
             </div>
 
             <div className="flex items-center justify-between gap-4">
-              <label
-                htmlFor="detail-category"
-                className="shrink-0 text-sm font-medium text-neutral-600 dark:text-neutral-300"
-              >
+              <span className="shrink-0 text-sm font-medium text-neutral-800 dark:text-neutral-300">
                 {t('detail.category')}
-              </label>
-              <select
-                id="detail-category"
+              </span>
+              <SegmentedField
                 value={task.category}
-                onChange={(e) => onSave(task.id, { category: e.target.value as Category })}
-                className={SELECT_CLASS}
-              >
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>
-                    {t(`category.${c}`)}
-                  </option>
-                ))}
-              </select>
+                options={CATEGORY_OPTIONS}
+                onChange={(v) => onSave(task.id, { category: v })}
+                getLabel={(c) => t(`category.${c}`)}
+                ariaLabel={t('a11y.category')}
+                getColor={(c) => getCategoryChartColor(c, theme)}
+              />
             </div>
 
             <div className="flex items-center justify-between gap-4">
               <label
                 htmlFor="detail-deadline"
-                className="shrink-0 text-sm font-medium text-neutral-600 dark:text-neutral-300"
+                className="shrink-0 text-sm font-medium text-neutral-800 dark:text-neutral-300"
               >
                 {t('detail.deadline')}
               </label>
@@ -207,8 +204,9 @@ const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
             </div>
           </div>
         </div>
+        </div>
       </div>
-    </div>
+    </ModalPortal>
   )
 }
 

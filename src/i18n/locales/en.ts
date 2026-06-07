@@ -16,6 +16,14 @@ export const en = {
     dark: 'Dark',
     toggle: 'Toggle theme',
   },
+  settings: {
+    title: 'Settings',
+    open: 'Open settings',
+    language: 'Language',
+    languageDesc: 'Choose your display language',
+    theme: 'Theme',
+    themeDesc: 'Switch between light and dark mode',
+  },
   a11y: {
     expandSidebar: 'Expand sidebar',
     collapseSidebar: 'Collapse sidebar',

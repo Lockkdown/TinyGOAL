@@ -1,4 +1,5 @@
-import type { Category, Status } from '../types'
+import type { AppTheme } from '../types'
+import type { Category, Priority, Status } from '../types'
 
 export const STATUS_CHART_COLORS: Record<Status, string> = {
   Todo: '#94a3b8',
@@ -34,11 +35,23 @@ export function hexWithAlpha(hex: string, alpha: number): string {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`
 }
 
-export function getStatusChartColor(status: Status, theme: 'light' | 'dark'): string {
+export function getStatusChartColor(status: Status, theme: AppTheme): string {
   return theme === 'dark' ? STATUS_CHART_COLORS_DARK[status] : STATUS_CHART_COLORS[status]
 }
 
-export function getCategoryChartColor(category: Category, theme: 'light' | 'dark'): string {
+export function getCategoryChartColor(category: Category, theme: AppTheme): string {
   const palette = CATEGORY_CHART_COLORS[category]
+  return theme === 'dark' ? palette.dark : palette.light
+}
+
+/** Pill colors aligned with PriorityIcon hues (green / amber / red) */
+const PRIORITY_PILL_COLORS: Record<Priority, { light: string; dark: string }> = {
+  Low: { light: '#22c55e', dark: '#4ade80' },
+  Medium: { light: '#eab308', dark: '#facc15' },
+  High: { light: '#ef4444', dark: '#f87171' },
+}
+
+export function getPriorityPillColor(priority: Priority, theme: AppTheme): string {
+  const palette = PRIORITY_PILL_COLORS[priority]
   return theme === 'dark' ? palette.dark : palette.light
 }

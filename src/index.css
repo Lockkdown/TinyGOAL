@@ -14,8 +14,8 @@
     --tk-bg: 250 250 250;          /* neutral-50 */
     --tk-surface: 255 255 255;     /* pure white */
     --tk-surface-hover: 245 245 245;
-    --tk-border: 229 229 229;      /* neutral-200 */
-    --tk-border-subtle: 245 245 245;
+    --tk-border: 212 212 212;      /* neutral-300 — đủ tương phản trên surface trắng */
+    --tk-border-subtle: 229 229 229; /* neutral-200 — divider nhẹ trong panel */
     --tk-text-1: 23 23 23;         /* neutral-900 — near black */
     --tk-text-2: 82 82 82;         /* neutral-600 */
     --tk-text-3: 163 163 163;      /* neutral-400 */

@@ -18,6 +18,14 @@ export const vi = {
     dark: 'Tối',
     toggle: 'Đổi giao diện',
   },
+  settings: {
+    title: 'Cài đặt',
+    open: 'Mở cài đặt',
+    language: 'Ngôn ngữ',
+    languageDesc: 'Chọn ngôn ngữ hiển thị',
+    theme: 'Giao diện',
+    themeDesc: 'Chuyển giữa chế độ sáng và tối',
+  },
   a11y: {
     expandSidebar: 'Mở rộng thanh bên',
     collapseSidebar: 'Thu gọn thanh bên',

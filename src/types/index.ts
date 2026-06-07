@@ -72,8 +72,7 @@ export type SidebarProps = {
   onChangeView: (view: ActiveView) => void
   isCollapsed: boolean
   onToggleCollapsed: () => void
-  theme: AppTheme
-  onToggleTheme: () => void
+  onOpenSettings: () => void
 }
 
 export type TaskViewProps = {
