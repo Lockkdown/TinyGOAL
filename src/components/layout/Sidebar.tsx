@@ -1,7 +1,7 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ActiveView, SidebarProps } from '../../types'
-import { GearIcon } from '../shared/icons'
+import { FocusIcon, GearIcon } from '../shared/icons'
 
 const SIDEBAR_ACTIVE_CLASSES =
   'bg-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:text-neutral-100'
@@ -143,6 +143,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
           onChangeView={onChangeView}
           navId="nav-statistic"
           panelId="statistic-panel"
+        />
+        <NavItem
+          view="focus"
+          label={t('nav.focus')}
+          icon={<FocusIcon />}
+          activeView={activeView}
+          isCollapsed={isCollapsed}
+          onChangeView={onChangeView}
+          navId="nav-focus"
+          panelId="focus-panel"
         />
       </nav>
       <div

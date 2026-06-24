@@ -5,6 +5,7 @@ export const vi = {
   nav: {
     task: 'Công việc',
     statistic: 'Thống kê',
+    focus: 'Tập trung',
     switchView: 'Chuyển chế độ xem',
   },
   lang: {
@@ -72,6 +73,24 @@ export const vi = {
     priority: 'Ưu tiên',
     category: 'Danh mục',
     deadline: 'Hạn chót',
+    pomodoroCount: 'Phiên tập trung',
+  },
+  focus: {
+    selectTask: 'Chọn một việc',
+    noTask: 'Không gắn việc',
+    start: 'Bắt đầu',
+    pause: 'Tạm dừng',
+    continue: 'Tiếp tục',
+    end: 'Kết thúc',
+    paused: 'Đã tạm dừng',
+    search: 'Tìm kiếm',
+    settings: 'Cài đặt hẹn giờ',
+    focusTime: 'Tập trung',
+    breakTime: 'Nghỉ',
+    phaseFocus: 'Tập trung',
+    phaseBreak: 'Giải lao',
+    skipBreak: 'Bỏ qua nghỉ',
+    minutes: '{{n}} phút',
   },
   dashboard: {
     overview: 'Tổng quan',

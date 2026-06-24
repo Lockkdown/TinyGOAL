@@ -14,6 +14,7 @@ export type Task = {
   deadline: string
   createdAt: string
   completedAt?: string | null
+  pomodoroCount?: number
 }
 
 export type TaskStats = {
@@ -63,7 +64,32 @@ export type DashboardProps = {
 
 export type AppTheme = 'light' | 'dark'
 
-export type ActiveView = 'task' | 'statistic'
+export type ActiveView = 'task' | 'statistic' | 'focus'
+
+export type PomodoroPhaseStatus = 'idle' | 'running' | 'paused' | 'finished'
+
+export type PomodoroPhase = 'focus' | 'break'
+
+export type PomodoroConfig = {
+  focusMinutes: number
+  breakMinutes: number
+}
+
+export type PomodoroSession = {
+  date: string
+  /** Actual focus minutes completed for this session (not break) */
+  minutes: number
+  taskId: string | null
+}
+
+export type CountdownControls = {
+  remainingMs: number
+  status: PomodoroPhaseStatus
+  start: () => void
+  reset: () => void
+  pause: () => void
+  resume: () => void
+}
 
 export type BoardLayout = 'board' | 'list'
 
@@ -106,6 +132,27 @@ export type BoardViewProps = {
 
 export type DashboardViewProps = {
   tasks: Task[]
+}
+
+export type FocusSettingsPanelProps = {
+  config: PomodoroConfig
+  onChange: (next: PomodoroConfig) => void
+  onClose: () => void
+}
+
+export type FocusViewProps = {
+  tasks: Task[]
+  selectedTaskId: string | null
+  onSelectTask: (id: string | null) => void
+  countdown: CountdownControls
+  config: PomodoroConfig
+  onConfigChange: (next: PomodoroConfig) => void
+  phase: PomodoroPhase
+  progress: number
+  onSkipBreak: () => void
+  onPause: () => void
+  onResume: () => void
+  onEnd: () => void
 }
 
 export type TaskDetailPanelProps = {
