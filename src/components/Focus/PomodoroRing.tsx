@@ -8,11 +8,20 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 type PomodoroRingProps = {
   progress: number
   label: string
+  variant?: 'focus' | 'break'
 }
 
-export const PomodoroRing: React.FC<PomodoroRingProps> = ({ progress, label }) => {
+export const PomodoroRing: React.FC<PomodoroRingProps> = ({
+  progress,
+  label,
+  variant = 'focus',
+}) => {
   const clamped = Math.min(1, Math.max(0, progress))
   const dashOffset = CIRCUMFERENCE * (1 - clamped)
+  const strokeColor =
+    variant === 'break'
+      ? 'rgb(var(--tk-text-3))'
+      : 'rgb(var(--tk-accent))'
 
   return (
     <div className="relative mx-auto h-60 w-60">
@@ -40,7 +49,7 @@ export const PomodoroRing: React.FC<PomodoroRingProps> = ({ progress, label }) =
           strokeDashoffset={dashOffset}
           transform={`rotate(-90 ${CX} ${CY})`}
           className="transition-[stroke-dashoffset] duration-300 motion-reduce:transition-none"
-          style={{ stroke: 'rgb(var(--tk-accent))' }}
+          style={{ stroke: strokeColor }}
         />
       </svg>
       <div

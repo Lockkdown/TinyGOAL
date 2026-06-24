@@ -1,43 +1,60 @@
 import React, { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { FocusSettingsPanel } from '../components/Focus/FocusSettingsPanel'
 import { PomodoroRing } from '../components/Focus/PomodoroRing'
 import { TaskPickerPanel } from '../components/Focus/TaskPickerPanel'
+import { GearIcon } from '../components/shared/icons'
 import type { FocusViewProps } from '../types'
 import { formatMs } from '../utils/helpers'
-
-const POMO_DURATION_MS = 20 * 60 * 1000
 
 export const FocusView: React.FC<FocusViewProps> = ({
   tasks,
   selectedTaskId,
   onSelectTask,
   countdown,
+  config,
+  onConfigChange,
+  phase,
+  progress,
+  onSkipBreak,
+  onReset,
 }) => {
   const { t } = useTranslation()
   const [pickerOpen, setPickerOpen] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(false)
 
   const selectedTask = useMemo(
     () => (selectedTaskId ? tasks.find((task) => task.id === selectedTaskId) : null),
     [tasks, selectedTaskId],
   )
 
-  const progress = countdown.remainingMs / POMO_DURATION_MS
   const label = formatMs(countdown.remainingMs)
-
+  const phaseLabel = phase === 'focus' ? t('focus.phaseFocus') : t('focus.phaseBreak')
   const taskLabel = selectedTask?.title ?? t('focus.selectTask')
+  const isRunning = countdown.status === 'running'
 
   return (
     <div
       id="focus-panel"
       role="tabpanel"
       aria-labelledby="nav-focus"
-      className="mx-auto flex w-full max-w-lg flex-col px-4 py-10"
+      className="relative mx-auto flex w-full max-w-lg flex-col px-4 py-10"
     >
+      <button
+        type="button"
+        onClick={() => setSettingsOpen(true)}
+        disabled={isRunning}
+        aria-label={t('focus.settings')}
+        className="absolute right-4 top-4 rounded p-1.5 text-tk-text-3 transition-colors hover:bg-tk-surface-hover hover:text-tk-text-1 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        <GearIcon />
+      </button>
+
       <div className="relative mb-8 flex justify-center">
         <button
           type="button"
           onClick={() => setPickerOpen(true)}
-          disabled={countdown.status === 'running'}
+          disabled={isRunning}
           className="inline-flex items-center gap-1 text-sm font-medium text-tk-text-2 transition-colors hover:text-tk-text-1 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <span>{t('nav.focus')}</span>
@@ -54,15 +71,17 @@ export const FocusView: React.FC<FocusViewProps> = ({
         )}
       </div>
 
+      <p className="mb-2 text-center text-sm font-medium text-tk-text-2">{phaseLabel}</p>
+
       <div role="timer" aria-live="off" className="mb-10 flex justify-center">
-        <PomodoroRing progress={progress} label={label} />
+        <PomodoroRing progress={progress} label={label} variant={phase} />
       </div>
 
-      <div className="flex justify-center">
-        {countdown.status === 'running' ? (
+      <div className="flex flex-col items-center gap-3">
+        {isRunning ? (
           <button
             type="button"
-            onClick={countdown.reset}
+            onClick={onReset}
             aria-label={t('focus.reset')}
             className="rounded-lg bg-tk-accent px-8 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
           >
@@ -78,7 +97,25 @@ export const FocusView: React.FC<FocusViewProps> = ({
             {t('focus.start')}
           </button>
         )}
+
+        {phase === 'break' && (
+          <button
+            type="button"
+            onClick={onSkipBreak}
+            className="text-xs font-medium text-tk-text-3 transition-colors hover:text-tk-text-2"
+          >
+            {t('focus.skipBreak')}
+          </button>
+        )}
       </div>
+
+      {settingsOpen && (
+        <FocusSettingsPanel
+          config={config}
+          onChange={onConfigChange}
+          onClose={() => setSettingsOpen(false)}
+        />
+      )}
     </div>
   )
 }

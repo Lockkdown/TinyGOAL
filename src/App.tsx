@@ -7,14 +7,20 @@ import { useCountdown } from './hooks/useCountdown'
 import { useLocalStorage } from './hooks/useLocalStorage'
 import { useTheme } from './hooks/useTheme'
 import { useTasks } from './hooks/useTasks'
-import type { ActiveView, BoardLayout, PomodoroSession, Task } from './types'
+import type {
+  ActiveView,
+  BoardLayout,
+  PomodoroConfig,
+  PomodoroPhase,
+  PomodoroSession,
+  Task,
+} from './types'
 import { todayDateKey } from './utils/helpers'
 import DashboardView from './views/DashboardView'
 import FocusView from './views/FocusView'
 import TaskView from './views/TaskView'
 
-const POMO_MINUTES = 20
-const POMO_DURATION_MS = POMO_MINUTES * 60 * 1000
+const DEFAULT_POMO_CONFIG: PomodoroConfig = { focusMinutes: 25, breakMinutes: 5 }
 
 export default function App() {
   const [isFormOpen, setIsFormOpen] = useState(false)
@@ -22,11 +28,16 @@ export default function App() {
   const [detailTaskId, setDetailTaskId] = useState<string | null>(null)
   const [focusTaskId, setFocusTaskId] = useState<string | null>(null)
   const [activeView, setActiveView] = useState<ActiveView>('task')
+  const [pomoPhase, setPomoPhase] = useState<PomodoroPhase>('focus')
   const [sidebarState, setSidebarState] = useLocalStorage<'expanded' | 'collapsed'>(
     'tinygoal-sidebar',
     'expanded',
   )
   const [boardLayout, setBoardLayout] = useLocalStorage<BoardLayout>('tinygoal-view', 'board')
+  const [pomoConfig, setPomoConfig] = useLocalStorage<PomodoroConfig>(
+    'tinygoal-pomo-config',
+    DEFAULT_POMO_CONFIG,
+  )
   const [pomoSessions, setPomoSessions] = useLocalStorage<PomodoroSession[]>(
     'tinygoal-pomo-sessions',
     [],
@@ -36,6 +47,11 @@ export default function App() {
 
   const focusTaskIdRef = useRef(focusTaskId)
   const tasksRef = useRef(tasks)
+  const pomoConfigRef = useRef(pomoConfig)
+  const pomoPhaseRef = useRef(pomoPhase)
+  const pomoSessionsRef = useRef(pomoSessions)
+  const autoStartBreakRef = useRef(false)
+  const countdownStartRef = useRef<() => void>(() => {})
 
   useEffect(() => {
     focusTaskIdRef.current = focusTaskId
@@ -45,27 +61,77 @@ export default function App() {
     tasksRef.current = tasks
   }, [tasks])
 
-  const handleSessionComplete = useCallback(() => {
-    const taskId = focusTaskIdRef.current
-    setPomoSessions([
-      ...pomoSessions,
-      { date: todayDateKey(), minutes: POMO_MINUTES, taskId },
-    ])
+  useEffect(() => {
+    pomoConfigRef.current = pomoConfig
+  }, [pomoConfig])
 
-    if (!taskId) return
+  useEffect(() => {
+    pomoPhaseRef.current = pomoPhase
+  }, [pomoPhase])
 
-    const task = tasksRef.current.find((t) => t.id === taskId)
-    if (!task) return
+  useEffect(() => {
+    pomoSessionsRef.current = pomoSessions
+  }, [pomoSessions])
 
-    const nextCount = (task.pomodoroCount ?? 0) + 1
-    if (task.status === 'Todo') {
-      updateTask(taskId, { pomodoroCount: nextCount, status: 'In Progress' })
+  const handlePhaseFinished = useCallback(() => {
+    const phase = pomoPhaseRef.current
+    const config = pomoConfigRef.current
+
+    if (phase === 'focus') {
+      const taskId = focusTaskIdRef.current
+      setPomoSessions([
+        ...pomoSessionsRef.current,
+        { date: todayDateKey(), minutes: config.focusMinutes, taskId },
+      ])
+
+      if (taskId) {
+        const task = tasksRef.current.find((t) => t.id === taskId)
+        if (task) {
+          const nextCount = (task.pomodoroCount ?? 0) + 1
+          if (task.status === 'Todo') {
+            updateTask(taskId, { pomodoroCount: nextCount, status: 'In Progress' })
+          } else {
+            updateTask(taskId, { pomodoroCount: nextCount })
+          }
+        }
+      }
+
+      autoStartBreakRef.current = true
+      setPomoPhase('break')
     } else {
-      updateTask(taskId, { pomodoroCount: nextCount })
+      setPomoPhase('focus')
     }
-  }, [pomoSessions, setPomoSessions, updateTask])
+  }, [setPomoSessions, updateTask])
 
-  const countdown = useCountdown(POMO_DURATION_MS, handleSessionComplete)
+  const phaseDurationMs =
+    (pomoPhase === 'focus' ? pomoConfig.focusMinutes : pomoConfig.breakMinutes) * 60 * 1000
+
+  const countdown = useCountdown(phaseDurationMs, handlePhaseFinished)
+
+  useEffect(() => {
+    countdownStartRef.current = countdown.start
+  }, [countdown.start])
+
+  useEffect(() => {
+    if (pomoPhase === 'break' && autoStartBreakRef.current) {
+      autoStartBreakRef.current = false
+      countdownStartRef.current()
+    }
+  }, [pomoPhase])
+
+  const progress = countdown.remainingMs / phaseDurationMs
+
+  const handleReset = useCallback(() => {
+    autoStartBreakRef.current = false
+    setPomoPhase('focus')
+    countdown.reset()
+  }, [countdown])
+
+  const handleSkipBreak = useCallback(() => {
+    autoStartBreakRef.current = false
+    setPomoPhase('focus')
+    countdown.reset()
+  }, [countdown])
 
   const activeDetail = tasks.find((t) => t.id === detailTaskId) ?? null
 
@@ -122,6 +188,12 @@ export default function App() {
             selectedTaskId={focusTaskId}
             onSelectTask={setFocusTaskId}
             countdown={countdown}
+            config={pomoConfig}
+            onConfigChange={setPomoConfig}
+            phase={pomoPhase}
+            progress={progress}
+            onSkipBreak={handleSkipBreak}
+            onReset={handleReset}
           />
         )}
       </main>

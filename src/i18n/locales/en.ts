@@ -79,6 +79,13 @@ export const en = {
     start: 'Start',
     reset: 'Reset',
     search: 'Search',
+    settings: 'Timer settings',
+    focusTime: 'Focus',
+    breakTime: 'Break',
+    phaseFocus: 'Focus',
+    phaseBreak: 'Break',
+    skipBreak: 'Skip break',
+    minutes: '{{n}} min',
   },
   dashboard: {
     overview: 'Overview',

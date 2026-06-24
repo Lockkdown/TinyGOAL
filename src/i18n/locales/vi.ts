@@ -81,6 +81,13 @@ export const vi = {
     start: 'Bắt đầu',
     reset: 'Đặt lại',
     search: 'Tìm kiếm',
+    settings: 'Cài đặt hẹn giờ',
+    focusTime: 'Tập trung',
+    breakTime: 'Nghỉ',
+    phaseFocus: 'Tập trung',
+    phaseBreak: 'Giải lao',
+    skipBreak: 'Bỏ qua nghỉ',
+    minutes: '{{n}} phút',
   },
   dashboard: {
     overview: 'Tổng quan',
