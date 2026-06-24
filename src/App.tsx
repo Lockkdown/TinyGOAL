@@ -121,7 +121,7 @@ export default function App() {
 
   const progress = countdown.remainingMs / phaseDurationMs
 
-  const handleReset = useCallback(() => {
+  const handleEndSession = useCallback(() => {
     autoStartBreakRef.current = false
     setPomoPhase('focus')
     countdown.reset()
@@ -193,7 +193,9 @@ export default function App() {
             phase={pomoPhase}
             progress={progress}
             onSkipBreak={handleSkipBreak}
-            onReset={handleReset}
+            onPause={countdown.pause}
+            onResume={countdown.resume}
+            onEnd={handleEndSession}
           />
         )}
       </main>

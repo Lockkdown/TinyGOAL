@@ -66,7 +66,7 @@ export type AppTheme = 'light' | 'dark'
 
 export type ActiveView = 'task' | 'statistic' | 'focus'
 
-export type PomodoroPhaseStatus = 'idle' | 'running' | 'finished'
+export type PomodoroPhaseStatus = 'idle' | 'running' | 'paused' | 'finished'
 
 export type PomodoroPhase = 'focus' | 'break'
 
@@ -87,6 +87,8 @@ export type CountdownControls = {
   status: PomodoroPhaseStatus
   start: () => void
   reset: () => void
+  pause: () => void
+  resume: () => void
 }
 
 export type BoardLayout = 'board' | 'list'
@@ -148,7 +150,9 @@ export type FocusViewProps = {
   phase: PomodoroPhase
   progress: number
   onSkipBreak: () => void
-  onReset: () => void
+  onPause: () => void
+  onResume: () => void
+  onEnd: () => void
 }
 
 export type TaskDetailPanelProps = {

@@ -17,7 +17,9 @@ export const FocusView: React.FC<FocusViewProps> = ({
   phase,
   progress,
   onSkipBreak,
-  onReset,
+  onPause,
+  onResume,
+  onEnd,
 }) => {
   const { t } = useTranslation()
   const [pickerOpen, setPickerOpen] = useState(false)
@@ -31,7 +33,8 @@ export const FocusView: React.FC<FocusViewProps> = ({
   const label = formatMs(countdown.remainingMs)
   const phaseLabel = phase === 'focus' ? t('focus.phaseFocus') : t('focus.phaseBreak')
   const taskLabel = selectedTask?.title ?? t('focus.selectTask')
-  const isRunning = countdown.status === 'running'
+  const isActive = countdown.status !== 'idle'
+  const timerStatus = countdown.status
 
   return (
     <div
@@ -43,7 +46,7 @@ export const FocusView: React.FC<FocusViewProps> = ({
       <button
         type="button"
         onClick={() => setSettingsOpen(true)}
-        disabled={isRunning}
+        disabled={isActive}
         aria-label={t('focus.settings')}
         className="absolute right-4 top-4 rounded p-1.5 text-tk-text-3 transition-colors hover:bg-tk-surface-hover hover:text-tk-text-1 disabled:cursor-not-allowed disabled:opacity-50"
       >
@@ -54,7 +57,7 @@ export const FocusView: React.FC<FocusViewProps> = ({
         <button
           type="button"
           onClick={() => setPickerOpen(true)}
-          disabled={isRunning}
+          disabled={isActive}
           className="inline-flex items-center gap-1 text-sm font-medium text-tk-text-2 transition-colors hover:text-tk-text-1 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <span>{t('nav.focus')}</span>
@@ -73,21 +76,17 @@ export const FocusView: React.FC<FocusViewProps> = ({
 
       <p className="mb-2 text-center text-sm font-medium text-tk-text-2">{phaseLabel}</p>
 
-      <div role="timer" aria-live="off" className="mb-10 flex justify-center">
+      <div role="timer" aria-live="off" className="mb-2 flex justify-center">
         <PomodoroRing progress={progress} label={label} variant={phase} />
       </div>
 
+      {timerStatus === 'paused' && (
+        <p className="mb-8 text-center text-sm text-tk-text-3">{t('focus.paused')}</p>
+      )}
+      {timerStatus !== 'paused' && <div className="mb-8" />}
+
       <div className="flex flex-col items-center gap-3">
-        {isRunning ? (
-          <button
-            type="button"
-            onClick={onReset}
-            aria-label={t('focus.reset')}
-            className="rounded-lg bg-tk-accent px-8 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
-          >
-            {t('focus.reset')}
-          </button>
-        ) : (
+        {timerStatus === 'idle' && (
           <button
             type="button"
             onClick={countdown.start}
@@ -96,6 +95,38 @@ export const FocusView: React.FC<FocusViewProps> = ({
           >
             {t('focus.start')}
           </button>
+        )}
+
+        {timerStatus === 'running' && (
+          <button
+            type="button"
+            onClick={onPause}
+            aria-label={t('focus.pause')}
+            className="rounded-lg bg-tk-accent px-8 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
+          >
+            {t('focus.pause')}
+          </button>
+        )}
+
+        {timerStatus === 'paused' && (
+          <div className="flex flex-col items-center gap-3 sm:flex-row">
+            <button
+              type="button"
+              onClick={onResume}
+              aria-label={t('focus.continue')}
+              className="rounded-lg bg-tk-accent px-8 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
+            >
+              {t('focus.continue')}
+            </button>
+            <button
+              type="button"
+              onClick={onEnd}
+              aria-label={t('focus.end')}
+              className="rounded-lg border border-tk-border px-8 py-2.5 text-sm font-medium text-tk-text-1 transition-colors hover:bg-tk-surface-hover"
+            >
+              {t('focus.end')}
+            </button>
+          </div>
         )}
 
         {phase === 'break' && (

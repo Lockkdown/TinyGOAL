@@ -11,8 +11,11 @@ export function useCountdown(
   status: PomodoroPhaseStatus
   start: () => void
   reset: () => void
+  pause: () => void
+  resume: () => void
 } {
   const [endsAt, setEndsAt] = useState<number | null>(null)
+  const [pausedRemainingMs, setPausedRemainingMs] = useState<number | null>(null)
   const [now, setNow] = useState(() => Date.now())
   const finishedFiredRef = useRef(false)
   const onFinishedRef = useRef(onFinished)
@@ -22,26 +25,47 @@ export function useCountdown(
   }, [onFinished])
 
   const remainingMs =
-    endsAt === null ? durationMs : Math.max(0, endsAt - now)
+    pausedRemainingMs !== null
+      ? pausedRemainingMs
+      : endsAt === null
+        ? durationMs
+        : Math.max(0, endsAt - now)
 
   const status: PomodoroPhaseStatus =
-    endsAt === null
-      ? 'idle'
-      : remainingMs > 0
-        ? 'running'
-        : 'finished'
+    pausedRemainingMs !== null
+      ? 'paused'
+      : endsAt === null
+        ? 'idle'
+        : remainingMs > 0
+          ? 'running'
+          : 'finished'
 
   const start = useCallback(() => {
     finishedFiredRef.current = false
+    setPausedRemainingMs(null)
     setEndsAt(Date.now() + durationMs)
     setNow(Date.now())
   }, [durationMs])
 
   const reset = useCallback(() => {
     finishedFiredRef.current = false
+    setPausedRemainingMs(null)
     setEndsAt(null)
     setNow(Date.now())
   }, [])
+
+  const pause = useCallback(() => {
+    if (endsAt === null) return
+    setPausedRemainingMs(Math.max(0, endsAt - Date.now()))
+    setEndsAt(null)
+  }, [endsAt])
+
+  const resume = useCallback(() => {
+    if (pausedRemainingMs === null) return
+    setEndsAt(Date.now() + pausedRemainingMs)
+    setPausedRemainingMs(null)
+    setNow(Date.now())
+  }, [pausedRemainingMs])
 
   useEffect(() => {
     if (endsAt === null) return
@@ -62,5 +86,5 @@ export function useCountdown(
     setEndsAt(null)
   }, [endsAt, remainingMs])
 
-  return { remainingMs, status, start, reset }
+  return { remainingMs, status, start, reset, pause, resume }
 }
