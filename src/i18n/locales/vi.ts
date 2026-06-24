@@ -5,6 +5,7 @@ export const vi = {
   nav: {
     task: 'Công việc',
     statistic: 'Thống kê',
+    focus: 'Tập trung',
     switchView: 'Chuyển chế độ xem',
   },
   lang: {
@@ -72,6 +73,14 @@ export const vi = {
     priority: 'Ưu tiên',
     category: 'Danh mục',
     deadline: 'Hạn chót',
+    pomodoroCount: 'Phiên tập trung',
+  },
+  focus: {
+    selectTask: 'Chọn một việc',
+    noTask: 'Không gắn việc',
+    start: 'Bắt đầu',
+    reset: 'Đặt lại',
+    search: 'Tìm kiếm',
   },
   dashboard: {
     overview: 'Tổng quan',

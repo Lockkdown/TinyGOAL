@@ -202,6 +202,15 @@ const TaskDetailPanelContent: React.FC<TaskDetailPanelContentProps> = ({
                 className={SELECT_CLASS}
               />
             </div>
+
+            <div className="flex items-center justify-between gap-4">
+              <span className="shrink-0 text-sm font-medium text-neutral-800 dark:text-neutral-300">
+                {t('detail.pomodoroCount')}
+              </span>
+              <span className="text-sm tabular-nums text-neutral-900 dark:text-neutral-100">
+                {task.pomodoroCount ?? 0}
+              </span>
+            </div>
           </div>
         </div>
         </div>

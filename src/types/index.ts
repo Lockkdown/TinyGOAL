@@ -14,6 +14,7 @@ export type Task = {
   deadline: string
   createdAt: string
   completedAt?: string | null
+  pomodoroCount?: number
 }
 
 export type TaskStats = {
@@ -63,7 +64,22 @@ export type DashboardProps = {
 
 export type AppTheme = 'light' | 'dark'
 
-export type ActiveView = 'task' | 'statistic'
+export type ActiveView = 'task' | 'statistic' | 'focus'
+
+export type PomodoroPhaseStatus = 'idle' | 'running' | 'finished'
+
+export type PomodoroSession = {
+  date: string
+  minutes: number
+  taskId: string | null
+}
+
+export type CountdownControls = {
+  remainingMs: number
+  status: PomodoroPhaseStatus
+  start: () => void
+  reset: () => void
+}
 
 export type BoardLayout = 'board' | 'list'
 
@@ -106,6 +122,13 @@ export type BoardViewProps = {
 
 export type DashboardViewProps = {
   tasks: Task[]
+}
+
+export type FocusViewProps = {
+  tasks: Task[]
+  selectedTaskId: string | null
+  onSelectTask: (id: string | null) => void
+  countdown: CountdownControls
 }
 
 export type TaskDetailPanelProps = {

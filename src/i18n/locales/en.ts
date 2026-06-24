@@ -3,6 +3,7 @@ export const en = {
   nav: {
     task: 'Task',
     statistic: 'Statistic',
+    focus: 'Focus',
     switchView: 'Switch view',
   },
   lang: {
@@ -70,6 +71,14 @@ export const en = {
     priority: 'Priority',
     category: 'Category',
     deadline: 'Deadline',
+    pomodoroCount: 'Focus sessions',
+  },
+  focus: {
+    selectTask: 'Select a task',
+    noTask: 'No task',
+    start: 'Start',
+    reset: 'Reset',
+    search: 'Search',
   },
   dashboard: {
     overview: 'Overview',

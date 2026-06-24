@@ -106,3 +106,19 @@ export const GearIcon: React.FC = () => (
     />
   </svg>
 )
+
+export const FocusIcon: React.FC = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 20 20"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    className="h-5 w-5 shrink-0"
+    aria-hidden="true"
+  >
+    <circle cx="10" cy="10" r="7.25" />
+    <path strokeLinecap="round" d="M10 10V5.5" />
+    <path strokeLinecap="round" d="M10 10l3.5 2" />
+  </svg>
+)
