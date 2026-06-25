@@ -57,9 +57,15 @@ export type CompletionPoint = {
   count: number
 }
 
+export type FocusTodaySummary = {
+  sessions: number
+  minutes: number
+}
+
 export type DashboardProps = {
   stats: TaskStats
   tasks: Task[]
+  sessions: PomodoroSession[]
 }
 
 export type AppTheme = 'light' | 'dark'
@@ -132,6 +138,7 @@ export type BoardViewProps = {
 
 export type DashboardViewProps = {
   tasks: Task[]
+  sessions: PomodoroSession[]
 }
 
 export type FocusSettingsPanelProps = {
@@ -153,6 +160,7 @@ export type FocusViewProps = {
   onPause: () => void
   onResume: () => void
   onEnd: () => void
+  todaySummary: FocusTodaySummary
 }
 
 export type TaskDetailPanelProps = {

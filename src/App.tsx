@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Sidebar from './components/layout/Sidebar'
 import SettingsPanel from './components/Settings/SettingsPanel'
 import TaskDetailPanel from './components/TaskDetail/TaskDetailPanel'
@@ -15,7 +15,7 @@ import type {
   PomodoroSession,
   Task,
 } from './types'
-import { todayDateKey } from './utils/helpers'
+import { getFocusTodayStats, todayDateKey } from './utils/helpers'
 import DashboardView from './views/DashboardView'
 import FocusView from './views/FocusView'
 import TaskView from './views/TaskView'
@@ -135,6 +135,8 @@ export default function App() {
 
   const activeDetail = tasks.find((t) => t.id === detailTaskId) ?? null
 
+  const focusToday = useMemo(() => getFocusTodayStats(pomoSessions), [pomoSessions])
+
   const isCollapsed = sidebarState === 'collapsed'
 
   const handleToggleCollapsed = useCallback(() => {
@@ -181,7 +183,7 @@ export default function App() {
             onChangeBoardLayout={setBoardLayout}
           />
         )}
-        {activeView === 'statistic' && <DashboardView tasks={tasks} />}
+        {activeView === 'statistic' && <DashboardView tasks={tasks} sessions={pomoSessions} />}
         {activeView === 'focus' && (
           <FocusView
             tasks={tasks}
@@ -196,6 +198,7 @@ export default function App() {
             onPause={countdown.pause}
             onResume={countdown.resume}
             onEnd={handleEndSession}
+            todaySummary={focusToday}
           />
         )}
       </main>

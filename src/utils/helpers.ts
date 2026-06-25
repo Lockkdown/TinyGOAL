@@ -1,4 +1,4 @@
-import type { CompletionPoint, Task, TaskStats } from '../types'
+import type { CompletionPoint, PomodoroSession, Task, TaskStats } from '../types'
 
 export function todayDateKey(): string {
   const d = new Date()
@@ -159,4 +159,48 @@ export function getCompletionWeekSeries(tasks: Task[], weeks = 8): CompletionPoi
     date: bucket.date,
     count: counts[index],
   }))
+}
+
+/** Focus minutes per day for the last N days. CompletionPoint.count = minutes (not session count). */
+export function getFocusSeries(sessions: PomodoroSession[], days = 7): CompletionPoint[] {
+  const today = new Date()
+  const dateKeys: string[] = []
+
+  for (let i = days - 1; i >= 0; i -= 1) {
+    const d = new Date(today)
+    d.setDate(today.getDate() - i)
+    dateKeys.push(toDateKey(d))
+  }
+
+  const minutesByDate = new Map<string, number>()
+  for (const key of dateKeys) {
+    minutesByDate.set(key, 0)
+  }
+
+  for (const session of sessions) {
+    if (minutesByDate.has(session.date)) {
+      minutesByDate.set(session.date, (minutesByDate.get(session.date) ?? 0) + session.minutes)
+    }
+  }
+
+  return dateKeys.map((date, index) => {
+    const isToday = index === dateKeys.length - 1
+    const label = isToday ? 'Today' : String(new Date(date + 'T12:00:00').getDate())
+    return { label, date, count: minutesByDate.get(date) ?? 0 }
+  })
+}
+
+export function getFocusTodayStats(
+  sessions: PomodoroSession[],
+): { sessions: number; minutes: number } {
+  const key = todayDateKey()
+  let count = 0
+  let minutes = 0
+  for (const session of sessions) {
+    if (session.date === key) {
+      count += 1
+      minutes += session.minutes
+    }
+  }
+  return { sessions: count, minutes }
 }

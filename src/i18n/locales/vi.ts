@@ -91,6 +91,7 @@ export const vi = {
     phaseBreak: 'Giải lao',
     skipBreak: 'Bỏ qua nghỉ',
     minutes: '{{n}} phút',
+    todaySummary: 'Hôm nay: {{sessions}} phiên · {{minutes}} phút',
   },
   dashboard: {
     overview: 'Tổng quan',
@@ -105,6 +106,10 @@ export const vi = {
     completionChart: 'Biểu đồ hoàn thành gần đây',
     day: 'Ngày',
     week: 'Tuần',
+    focusTime: 'Thời gian tập trung',
+    focusCurve: 'Tập trung (7 ngày qua)',
+    focusMinutes: 'Tổng số phút',
+    focusSessions: 'Số phiên',
   },
   chart: {
     today: 'Hôm nay',
