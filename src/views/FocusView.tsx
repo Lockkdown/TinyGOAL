@@ -20,6 +20,7 @@ export const FocusView: React.FC<FocusViewProps> = ({
   onPause,
   onResume,
   onEnd,
+  todaySummary,
 }) => {
   const { t } = useTranslation()
   const [pickerOpen, setPickerOpen] = useState(false)
@@ -138,6 +139,13 @@ export const FocusView: React.FC<FocusViewProps> = ({
             {t('focus.skipBreak')}
           </button>
         )}
+
+        <p className="mt-4 text-center text-xs text-tk-text-3">
+          {t('focus.todaySummary', {
+            sessions: todaySummary.sessions,
+            minutes: todaySummary.minutes,
+          })}
+        </p>
       </div>
 
       {settingsOpen && (

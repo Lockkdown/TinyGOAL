@@ -89,6 +89,7 @@ export const en = {
     phaseBreak: 'Break',
     skipBreak: 'Skip break',
     minutes: '{{n}} min',
+    todaySummary: 'Today: {{sessions}} sessions · {{minutes}} min',
   },
   dashboard: {
     overview: 'Overview',
@@ -103,6 +104,10 @@ export const en = {
     completionChart: 'Recent completion curve',
     day: 'Day',
     week: 'Week',
+    focusTime: 'Focus time',
+    focusCurve: 'Focus (last 7 days)',
+    focusMinutes: 'Total minutes',
+    focusSessions: 'Sessions',
   },
   chart: {
     today: 'Today',

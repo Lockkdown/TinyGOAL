@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Sidebar from './components/layout/Sidebar'
 import SettingsPanel from './components/Settings/SettingsPanel'
 import TaskDetailPanel from './components/TaskDetail/TaskDetailPanel'
@@ -15,12 +15,13 @@ import type {
   PomodoroSession,
   Task,
 } from './types'
-import { todayDateKey } from './utils/helpers'
+import { getFocusTodayStats, todayDateKey } from './utils/helpers'
 import DashboardView from './views/DashboardView'
 import FocusView from './views/FocusView'
 import TaskView from './views/TaskView'
 
 const DEFAULT_POMO_CONFIG: PomodoroConfig = { focusMinutes: 25, breakMinutes: 5 }
+const DEFAULT_NAV_ORDER: ActiveView[] = ['task', 'statistic', 'focus']
 
 export default function App() {
   const [isFormOpen, setIsFormOpen] = useState(false)
@@ -41,6 +42,10 @@ export default function App() {
   const [pomoSessions, setPomoSessions] = useLocalStorage<PomodoroSession[]>(
     'tinygoal-pomo-sessions',
     [],
+  )
+  const [navOrder, setNavOrder] = useLocalStorage<ActiveView[]>(
+    'tinygoal-nav-order',
+    DEFAULT_NAV_ORDER,
   )
   const { theme, toggleTheme } = useTheme()
   const { tasks, addTask, updateTask, moveTask, deleteTask } = useTasks()
@@ -135,6 +140,14 @@ export default function App() {
 
   const activeDetail = tasks.find((t) => t.id === detailTaskId) ?? null
 
+  const focusToday = useMemo(() => getFocusTodayStats(pomoSessions), [pomoSessions])
+
+  const safeNavOrder = useMemo(() => {
+    const valid = navOrder.filter((v) => DEFAULT_NAV_ORDER.includes(v))
+    const missing = DEFAULT_NAV_ORDER.filter((v) => !valid.includes(v))
+    return [...valid, ...missing]
+  }, [navOrder])
+
   const isCollapsed = sidebarState === 'collapsed'
 
   const handleToggleCollapsed = useCallback(() => {
@@ -169,6 +182,8 @@ export default function App() {
         isCollapsed={isCollapsed}
         onToggleCollapsed={handleToggleCollapsed}
         onOpenSettings={() => setIsSettingsOpen(true)}
+        navOrder={safeNavOrder}
+        onReorder={setNavOrder}
       />
       <main className="flex-1">
         {activeView === 'task' && (
@@ -181,7 +196,7 @@ export default function App() {
             onChangeBoardLayout={setBoardLayout}
           />
         )}
-        {activeView === 'statistic' && <DashboardView tasks={tasks} />}
+        {activeView === 'statistic' && <DashboardView tasks={tasks} sessions={pomoSessions} />}
         {activeView === 'focus' && (
           <FocusView
             tasks={tasks}
@@ -196,6 +211,7 @@ export default function App() {
             onPause={countdown.pause}
             onResume={countdown.resume}
             onEnd={handleEndSession}
+            todaySummary={focusToday}
           />
         )}
       </main>

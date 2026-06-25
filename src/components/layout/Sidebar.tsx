@@ -1,4 +1,21 @@
-import React from 'react'
+import {
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+import React, { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ActiveView, SidebarProps } from '../../types'
 import { FocusIcon, GearIcon } from '../shared/icons'
@@ -30,7 +47,33 @@ const StatisticIcon: React.FC = () => (
   </svg>
 )
 
-type NavItemProps = {
+type NavLabelKey = 'nav.task' | 'nav.statistic' | 'nav.focus'
+
+const NAV_ITEMS: Record<
+  ActiveView,
+  { labelKey: NavLabelKey; Icon: React.FC; navId: string; panelId: string }
+> = {
+  task: {
+    labelKey: 'nav.task',
+    Icon: TaskIcon,
+    navId: 'nav-task',
+    panelId: 'task-panel',
+  },
+  statistic: {
+    labelKey: 'nav.statistic',
+    Icon: StatisticIcon,
+    navId: 'nav-statistic',
+    panelId: 'statistic-panel',
+  },
+  focus: {
+    labelKey: 'nav.focus',
+    Icon: FocusIcon,
+    navId: 'nav-focus',
+    panelId: 'focus-panel',
+  },
+}
+
+type NavItemButtonProps = {
   view: ActiveView
   label: string
   icon: React.ReactNode
@@ -39,9 +82,14 @@ type NavItemProps = {
   onChangeView: (view: ActiveView) => void
   panelId: string
   navId: string
+  isDragging?: boolean
+  setNodeRef?: (node: HTMLElement | null) => void
+  style?: React.CSSProperties
+  dragAttributes?: React.HTMLAttributes<HTMLElement>
+  dragListeners?: React.HTMLAttributes<HTMLElement>
 }
 
-const NavItem: React.FC<NavItemProps> = ({
+const NavItemButton: React.FC<NavItemButtonProps> = ({
   view,
   label,
   icon,
@@ -50,26 +98,108 @@ const NavItem: React.FC<NavItemProps> = ({
   onChangeView,
   panelId,
   navId,
+  isDragging = false,
+  setNodeRef,
+  style,
+  dragAttributes,
+  dragListeners,
 }) => {
   const isActive = activeView === view
 
   return (
     <button
+      ref={setNodeRef}
       type="button"
       role="tab"
       id={navId}
       aria-controls={panelId}
       aria-selected={isActive}
       onClick={() => onChangeView(view)}
-      className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+      style={style}
+      className={`touch-none flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
         isActive
           ? SIDEBAR_ACTIVE_CLASSES
           : 'text-tk-text-2 hover:bg-tk-surface-hover hover:text-tk-text-1'
-      } ${isCollapsed ? 'justify-center' : ''}`}
+      } ${isCollapsed ? 'justify-center' : ''} ${isDragging ? 'opacity-40' : ''}`}
+      {...dragAttributes}
+      {...dragListeners}
     >
       {icon}
       <span className={isCollapsed ? 'sr-only' : ''}>{label}</span>
     </button>
+  )
+}
+
+type SortableNavItemProps = {
+  view: ActiveView
+  activeView: ActiveView
+  isCollapsed: boolean
+  onChangeView: (view: ActiveView) => void
+}
+
+const SortableNavItem: React.FC<SortableNavItemProps> = ({
+  view,
+  activeView,
+  isCollapsed,
+  onChangeView,
+}) => {
+  const { t } = useTranslation()
+  const { labelKey, Icon, navId, panelId } = NAV_ITEMS[view]
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: view,
+  })
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  }
+
+  return (
+    <NavItemButton
+      view={view}
+      label={t(labelKey)}
+      icon={<Icon />}
+      activeView={activeView}
+      isCollapsed={isCollapsed}
+      onChangeView={onChangeView}
+      navId={navId}
+      panelId={panelId}
+      isDragging={isDragging}
+      setNodeRef={setNodeRef}
+      style={style}
+      dragAttributes={attributes}
+      dragListeners={listeners}
+    />
+  )
+}
+
+type PlainNavItemProps = {
+  view: ActiveView
+  activeView: ActiveView
+  isCollapsed: boolean
+  onChangeView: (view: ActiveView) => void
+}
+
+const PlainNavItem: React.FC<PlainNavItemProps> = ({
+  view,
+  activeView,
+  isCollapsed,
+  onChangeView,
+}) => {
+  const { t } = useTranslation()
+  const { labelKey, Icon, navId, panelId } = NAV_ITEMS[view]
+
+  return (
+    <NavItemButton
+      view={view}
+      label={t(labelKey)}
+      icon={<Icon />}
+      activeView={activeView}
+      isCollapsed={isCollapsed}
+      onChangeView={onChangeView}
+      navId={navId}
+      panelId={panelId}
+    />
   )
 }
 
@@ -79,8 +209,49 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isCollapsed,
   onToggleCollapsed,
   onOpenSettings,
+  navOrder,
+  onReorder,
 }) => {
   const { t } = useTranslation()
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  )
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event
+      if (!over || active.id === over.id) return
+
+      const oldIndex = navOrder.indexOf(active.id as ActiveView)
+      const newIndex = navOrder.indexOf(over.id as ActiveView)
+      if (oldIndex === -1 || newIndex === -1) return
+
+      onReorder(arrayMove(navOrder, oldIndex, newIndex))
+    },
+    [navOrder, onReorder],
+  )
+
+  const navItems = navOrder.map((view) =>
+    isCollapsed ? (
+      <PlainNavItem
+        key={view}
+        view={view}
+        activeView={activeView}
+        isCollapsed={isCollapsed}
+        onChangeView={onChangeView}
+      />
+    ) : (
+      <SortableNavItem
+        key={view}
+        view={view}
+        activeView={activeView}
+        isCollapsed={isCollapsed}
+        onChangeView={onChangeView}
+      />
+    ),
+  )
 
   return (
     <aside
@@ -119,42 +290,31 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </svg>
         </button>
       </div>
-      <nav
-        role="tablist"
-        aria-label={t('nav.switchView')}
-        className="flex flex-col gap-1 p-2"
-      >
-        <NavItem
-          view="task"
-          label={t('nav.task')}
-          icon={<TaskIcon />}
-          activeView={activeView}
-          isCollapsed={isCollapsed}
-          onChangeView={onChangeView}
-          navId="nav-task"
-          panelId="task-panel"
-        />
-        <NavItem
-          view="statistic"
-          label={t('nav.statistic')}
-          icon={<StatisticIcon />}
-          activeView={activeView}
-          isCollapsed={isCollapsed}
-          onChangeView={onChangeView}
-          navId="nav-statistic"
-          panelId="statistic-panel"
-        />
-        <NavItem
-          view="focus"
-          label={t('nav.focus')}
-          icon={<FocusIcon />}
-          activeView={activeView}
-          isCollapsed={isCollapsed}
-          onChangeView={onChangeView}
-          navId="nav-focus"
-          panelId="focus-panel"
-        />
-      </nav>
+      {isCollapsed ? (
+        <nav
+          role="tablist"
+          aria-label={t('nav.switchView')}
+          className="flex flex-col gap-1 p-2"
+        >
+          {navItems}
+        </nav>
+      ) : (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext items={navOrder} strategy={verticalListSortingStrategy}>
+            <nav
+              role="tablist"
+              aria-label={t('nav.switchView')}
+              className="flex flex-col gap-1 p-2"
+            >
+              {navItems}
+            </nav>
+          </SortableContext>
+        </DndContext>
+      )}
       <div
         className={`mt-auto border-t border-tk-border p-2 ${
           isCollapsed ? 'flex justify-center' : ''

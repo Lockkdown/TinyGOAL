@@ -3,7 +3,7 @@ import Dashboard from '../components/Dashboard/Dashboard'
 import type { DashboardViewProps } from '../types'
 import { getStats } from '../utils/helpers'
 
-export const DashboardView: React.FC<DashboardViewProps> = ({ tasks }) => {
+export const DashboardView: React.FC<DashboardViewProps> = ({ tasks, sessions }) => {
   const stats = useMemo(() => getStats(tasks), [tasks])
 
   return (
@@ -13,7 +13,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ tasks }) => {
       aria-labelledby="nav-statistic"
       className="mx-auto w-full max-w-6xl px-4 pb-8"
     >
-      <Dashboard stats={stats} tasks={tasks} />
+      <Dashboard stats={stats} tasks={tasks} sessions={sessions} />
     </div>
   )
 }
