@@ -1,6 +1,6 @@
 import React from 'react'
 import type { AppTheme } from '../../types'
-import { getRingColor, hexWithAlpha } from '../../utils/chartColors'
+import { getRingColor } from '../../utils/chartColors'
 
 const RADIUS = 125
 const CX = 150
@@ -51,10 +51,7 @@ export const PomodoroRing: React.FC<PomodoroRingProps> = ({
           strokeDashoffset={dashOffset}
           transform={`rotate(-90 ${CX} ${CY})`}
           className="transition-[stroke-dashoffset,stroke] duration-300 motion-reduce:transition-none"
-          style={{
-            stroke: strokeColor,
-            filter: `drop-shadow(0 0 6px ${hexWithAlpha(strokeColor, 0.45)})`,
-          }}
+          style={{ stroke: strokeColor }}
         />
       </svg>
       <div

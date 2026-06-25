@@ -56,7 +56,14 @@ export function getPriorityPillColor(priority: Priority, theme: AppTheme): strin
   return theme === 'dark' ? palette.dark : palette.light
 }
 
-const BREAK_RING_COLOR = { light: '#14b8a6', dark: '#2dd4bf' }
+const BREAK_RING_COLOR = { light: '#0d9488', dark: '#14b8a6' }
+
+/** Ring hues — muted vs priority pills; same green/amber/red semantics, less neon */
+const RING_STATUS_COLORS: Record<Priority, { light: string; dark: string }> = {
+  Low: { light: '#16a34a', dark: '#22c55e' },
+  Medium: { light: '#ca8a04', dark: '#d97706' },
+  High: { light: '#dc2626', dark: '#ef4444' },
+}
 
 /**
  * Ring color by remaining time ratio.
@@ -75,7 +82,8 @@ export function getRingColor(
   const remaining = Math.min(1, Math.max(0, progress))
   const level: Priority =
     remaining > 0.5 ? 'Low' : remaining > 0.2 ? 'Medium' : 'High'
-  return getPriorityPillColor(level, theme)
+  const palette = RING_STATUS_COLORS[level]
+  return theme === 'dark' ? palette.dark : palette.light
 }
 
 /** Recharts bar/line hover band — subtle, theme-aware (tránh vùng trắng mặc định) */
