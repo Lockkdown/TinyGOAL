@@ -105,6 +105,8 @@ export type SidebarProps = {
   isCollapsed: boolean
   onToggleCollapsed: () => void
   onOpenSettings: () => void
+  navOrder: ActiveView[]
+  onReorder: (next: ActiveView[]) => void
 }
 
 export type TaskViewProps = {

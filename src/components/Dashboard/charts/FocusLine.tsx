@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Bar,
@@ -12,15 +12,11 @@ import {
 import { useTheme } from '../../../hooks/useTheme'
 import type { PomodoroSession } from '../../../types'
 import { getFocusSeries } from '../../../utils/helpers'
+import { getChartTooltipCursor, getTooltipNumericValue } from '../../../utils/chartColors'
+import { ChartTooltipContent } from './ChartTooltip'
 
 type FocusLineProps = {
   sessions: PomodoroSession[]
-}
-
-const TOOLTIP_STYLE_DARK = {
-  backgroundColor: '#1e1e1e',
-  border: '1px solid #2d2d2d',
-  color: '#fafafa',
 }
 
 export const FocusLine: React.FC<FocusLineProps> = ({ sessions }) => {
@@ -30,6 +26,11 @@ export const FocusLine: React.FC<FocusLineProps> = ({ sessions }) => {
   const gridColor = theme === 'dark' ? '#2d2d2d' : '#e5e5e5'
   const axisColor = theme === 'dark' ? '#737373' : '#525252'
   const barColor = theme === 'dark' ? '#38bdf8' : '#0ea5e9'
+
+  const formatValue = useCallback(
+    (value: number) => t('focus.minutes', { n: value }),
+    [t],
+  )
 
   const series = useMemo(() => {
     const raw = getFocusSeries(sessions, 7)
@@ -47,8 +48,28 @@ export const FocusLine: React.FC<FocusLineProps> = ({ sessions }) => {
           <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
           <XAxis dataKey="label" tick={{ fontSize: 12 }} stroke={axisColor} />
           <YAxis allowDecimals={false} tick={{ fontSize: 12 }} stroke={axisColor} />
-          <Tooltip contentStyle={theme === 'dark' ? TOOLTIP_STYLE_DARK : undefined} />
-          <Bar dataKey="count" fill={barColor} radius={[4, 4, 0, 0]} />
+          <Tooltip
+            cursor={getChartTooltipCursor(theme)}
+            offset={12}
+            wrapperStyle={{ outline: 'none', zIndex: 10 }}
+            content={(props) => {
+              const value = getTooltipNumericValue(props.payload)
+              if (!props.active || value == null) return null
+              return (
+                <ChartTooltipContent
+                  label={props.label}
+                  value={value}
+                  formatValue={formatValue}
+                />
+              )
+            }}
+          />
+          <Bar
+            dataKey="count"
+            fill={barColor}
+            radius={[4, 4, 0, 0]}
+            activeBar={{ fill: barColor, opacity: 0.75 }}
+          />
         </BarChart>
       </ResponsiveContainer>
     </div>

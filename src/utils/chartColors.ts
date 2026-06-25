@@ -55,3 +55,23 @@ export function getPriorityPillColor(priority: Priority, theme: AppTheme): strin
   const palette = PRIORITY_PILL_COLORS[priority]
   return theme === 'dark' ? palette.dark : palette.light
 }
+
+/** Recharts bar/line hover band — subtle, theme-aware (tránh vùng trắng mặc định) */
+export function getChartTooltipCursor(theme: AppTheme): { fill: string; radius?: number } {
+  return {
+    fill: theme === 'dark' ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.05)',
+    radius: 4,
+  }
+}
+
+export function getTooltipNumericValue(
+  payload: ReadonlyArray<{ value?: unknown }> | undefined,
+): number | null {
+  const raw = payload?.[0]?.value
+  if (typeof raw === 'number' && Number.isFinite(raw)) return raw
+  if (typeof raw === 'string') {
+    const parsed = Number(raw)
+    return Number.isFinite(parsed) ? parsed : null
+  }
+  return null
+}
