@@ -4,6 +4,7 @@ import { FocusSettingsPanel } from '../components/Focus/FocusSettingsPanel'
 import { PomodoroRing } from '../components/Focus/PomodoroRing'
 import { TaskPickerPanel } from '../components/Focus/TaskPickerPanel'
 import { GearIcon } from '../components/shared/icons'
+import { useTheme } from '../hooks/useTheme'
 import type { FocusViewProps } from '../types'
 import { formatMs } from '../utils/helpers'
 
@@ -23,6 +24,7 @@ export const FocusView: React.FC<FocusViewProps> = ({
   todaySummary,
 }) => {
   const { t } = useTranslation()
+  const { theme } = useTheme()
   const [pickerOpen, setPickerOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
 
@@ -78,7 +80,7 @@ export const FocusView: React.FC<FocusViewProps> = ({
       <p className="mb-2 text-center text-sm font-medium text-tk-text-2">{phaseLabel}</p>
 
       <div role="timer" aria-live="off" className="mb-2 flex justify-center">
-        <PomodoroRing progress={progress} label={label} variant={phase} />
+        <PomodoroRing progress={progress} label={label} variant={phase} theme={theme} />
       </div>
 
       {timerStatus === 'paused' && (

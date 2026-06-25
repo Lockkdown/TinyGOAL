@@ -56,6 +56,36 @@ export function getPriorityPillColor(priority: Priority, theme: AppTheme): strin
   return theme === 'dark' ? palette.dark : palette.light
 }
 
+const BREAK_RING_COLOR = { light: '#0d9488', dark: '#14b8a6' }
+
+/** Ring hues — muted vs priority pills; same green/amber/red semantics, less neon */
+const RING_STATUS_COLORS: Record<Priority, { light: string; dark: string }> = {
+  Low: { light: '#16a34a', dark: '#22c55e' },
+  Medium: { light: '#ca8a04', dark: '#d97706' },
+  High: { light: '#dc2626', dark: '#ef4444' },
+}
+
+/**
+ * Ring color by remaining time ratio.
+ * @param progress remaining fraction from App (1 at start → 0 at end)
+ * focus: >50% remaining = green (Low) · 20–50% = amber (Medium) · <20% = red (High)
+ * break: fixed teal
+ */
+export function getRingColor(
+  progress: number,
+  variant: 'focus' | 'break',
+  theme: AppTheme,
+): string {
+  if (variant === 'break') {
+    return theme === 'dark' ? BREAK_RING_COLOR.dark : BREAK_RING_COLOR.light
+  }
+  const remaining = Math.min(1, Math.max(0, progress))
+  const level: Priority =
+    remaining > 0.5 ? 'Low' : remaining > 0.2 ? 'Medium' : 'High'
+  const palette = RING_STATUS_COLORS[level]
+  return theme === 'dark' ? palette.dark : palette.light
+}
+
 /** Recharts bar/line hover band — subtle, theme-aware (tránh vùng trắng mặc định) */
 export function getChartTooltipCursor(theme: AppTheme): { fill: string; radius?: number } {
   return {
