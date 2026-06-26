@@ -70,7 +70,7 @@ export type DashboardProps = {
 
 export type AppTheme = 'light' | 'dark'
 
-export type ActiveView = 'task' | 'statistic' | 'focus'
+export type ActiveView = 'task' | 'statistic' | 'focus' | 'calendar'
 
 export type PomodoroPhaseStatus = 'idle' | 'running' | 'paused' | 'finished'
 
@@ -141,6 +141,12 @@ export type BoardViewProps = {
 export type DashboardViewProps = {
   tasks: Task[]
   sessions: PomodoroSession[]
+}
+
+export type CalendarViewProps = {
+  tasks: Task[]
+  onOpenTask: (task: Task) => void
+  onAddTaskOnDate: (dateKey: string) => void
 }
 
 export type FocusSettingsPanelProps = {

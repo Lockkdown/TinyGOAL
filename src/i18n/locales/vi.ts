@@ -6,6 +6,7 @@ export const vi = {
     task: 'Công việc',
     statistic: 'Thống kê',
     focus: 'Tập trung',
+    calendar: 'Lịch',
     switchView: 'Chuyển chế độ xem',
   },
   lang: {
@@ -114,5 +115,21 @@ export const vi = {
   chart: {
     today: 'Hôm nay',
     thisWeek: 'Tuần này',
+  },
+  calendar: {
+    today: 'Hôm nay',
+    more: '+{{n}} nữa',
+    prevMonth: 'Tháng trước',
+    nextMonth: 'Tháng sau',
+    addTaskOnDate: 'Thêm task ngày {{date}}',
+    weekdays: {
+      mon: 'T2',
+      tue: 'T3',
+      wed: 'T4',
+      thu: 'T5',
+      fri: 'T6',
+      sat: 'T7',
+      sun: 'CN',
+    },
   },
 } satisfies typeof en
