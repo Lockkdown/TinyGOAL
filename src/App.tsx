@@ -19,12 +19,14 @@ import { getFocusTodayStats, todayDateKey } from './utils/helpers'
 import DashboardView from './views/DashboardView'
 import FocusView from './views/FocusView'
 import TaskView from './views/TaskView'
+import CalendarView from './views/CalendarView'
 
 const DEFAULT_POMO_CONFIG: PomodoroConfig = { focusMinutes: 25, breakMinutes: 5 }
-const DEFAULT_NAV_ORDER: ActiveView[] = ['task', 'statistic', 'focus']
+const DEFAULT_NAV_ORDER: ActiveView[] = ['task', 'statistic', 'focus', 'calendar']
 
 export default function App() {
   const [isFormOpen, setIsFormOpen] = useState(false)
+  const [quickAddDeadline, setQuickAddDeadline] = useState<string | null>(null)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [detailTaskId, setDetailTaskId] = useState<string | null>(null)
   const [focusTaskId, setFocusTaskId] = useState<string | null>(null)
@@ -155,6 +157,12 @@ export default function App() {
   }, [isCollapsed, setSidebarState])
 
   const handleAddTask = useCallback(() => {
+    setQuickAddDeadline(null)
+    setIsFormOpen(true)
+  }, [])
+
+  const handleAddTaskOnDate = useCallback((dateKey: string) => {
+    setQuickAddDeadline(dateKey)
     setIsFormOpen(true)
   }, [])
 
@@ -164,6 +172,7 @@ export default function App() {
 
   const handleCloseForm = useCallback(() => {
     setIsFormOpen(false)
+    setQuickAddDeadline(null)
   }, [])
 
   const handleFormSubmit = useCallback(
@@ -185,7 +194,7 @@ export default function App() {
         navOrder={safeNavOrder}
         onReorder={setNavOrder}
       />
-      <main className="flex-1">
+      <main className="min-h-screen flex-1">
         {activeView === 'task' && (
           <TaskView
             tasks={tasks}
@@ -214,9 +223,21 @@ export default function App() {
             todaySummary={focusToday}
           />
         )}
+        {activeView === 'calendar' && (
+          <CalendarView
+            tasks={tasks}
+            onOpenTask={handleOpenTask}
+            onAddTaskOnDate={handleAddTaskOnDate}
+          />
+        )}
       </main>
       {isFormOpen && (
-        <QuickAddTask onSubmit={handleFormSubmit} onClose={handleCloseForm} />
+        <QuickAddTask
+          key={quickAddDeadline ?? 'default'}
+          onSubmit={handleFormSubmit}
+          onClose={handleCloseForm}
+          initialDeadline={quickAddDeadline ?? undefined}
+        />
       )}
       <TaskDetailPanel
         task={activeDetail}

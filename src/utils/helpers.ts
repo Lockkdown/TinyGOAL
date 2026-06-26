@@ -68,7 +68,7 @@ export function formatMs(ms: number): string {
   return `${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}`
 }
 
-function toDateKey(d: Date): string {
+export function toDateKey(d: Date): string {
   const y = d.getFullYear()
   const m = String(d.getMonth() + 1).padStart(2, '0')
   const day = String(d.getDate()).padStart(2, '0')
@@ -203,4 +203,51 @@ export function getFocusTodayStats(
     }
   }
   return { sessions: count, minutes }
+}
+
+export type CalendarCell = {
+  key: string
+  day: number
+  inMonth: boolean
+  isToday: boolean
+}
+
+/** 6×7 grid, week starts Monday. Local-safe — no new Date(string). */
+export function getCalendarMatrix(year: number, month: number): CalendarCell[][] {
+  const today = todayDateKey()
+  const firstOfMonth = new Date(year, month, 1)
+  const jsDay = firstOfMonth.getDay()
+  const offset = jsDay === 0 ? 6 : jsDay - 1
+  const gridStart = new Date(year, month, 1 - offset)
+
+  const weeks: CalendarCell[][] = []
+  for (let w = 0; w < 6; w += 1) {
+    const row: CalendarCell[] = []
+    for (let d = 0; d < 7; d += 1) {
+      const cur = new Date(
+        gridStart.getFullYear(),
+        gridStart.getMonth(),
+        gridStart.getDate() + w * 7 + d,
+      )
+      const key = toDateKey(cur)
+      row.push({
+        key,
+        day: cur.getDate(),
+        inMonth: cur.getMonth() === month,
+        isToday: key === today,
+      })
+    }
+    weeks.push(row)
+  }
+  return weeks
+}
+
+export function groupTasksByDeadline(tasks: Task[]): Map<string, Task[]> {
+  const map = new Map<string, Task[]>()
+  for (const task of tasks) {
+    const list = map.get(task.deadline)
+    if (list) list.push(task)
+    else map.set(task.deadline, [task])
+  }
+  return map
 }

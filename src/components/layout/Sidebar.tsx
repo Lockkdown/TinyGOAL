@@ -18,7 +18,7 @@ import { CSS } from '@dnd-kit/utilities'
 import React, { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ActiveView, SidebarProps } from '../../types'
-import { FocusIcon, GearIcon } from '../shared/icons'
+import { FocusIcon, GearIcon, CalendarIcon } from '../shared/icons'
 
 const SIDEBAR_ACTIVE_CLASSES =
   'bg-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:text-neutral-100'
@@ -47,7 +47,7 @@ const StatisticIcon: React.FC = () => (
   </svg>
 )
 
-type NavLabelKey = 'nav.task' | 'nav.statistic' | 'nav.focus'
+type NavLabelKey = 'nav.task' | 'nav.statistic' | 'nav.focus' | 'nav.calendar'
 
 const NAV_ITEMS: Record<
   ActiveView,
@@ -70,6 +70,12 @@ const NAV_ITEMS: Record<
     Icon: FocusIcon,
     navId: 'nav-focus',
     panelId: 'focus-panel',
+  },
+  calendar: {
+    labelKey: 'nav.calendar',
+    Icon: CalendarIcon,
+    navId: 'nav-calendar',
+    panelId: 'calendar-panel',
   },
 }
 

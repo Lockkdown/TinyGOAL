@@ -23,9 +23,14 @@ const PILL_FIELD_CLASS =
 export type QuickAddTaskProps = {
   onSubmit: (data: Omit<Task, 'id' | 'createdAt'>) => void
   onClose: () => void
+  initialDeadline?: string
 }
 
-export const QuickAddTask: React.FC<QuickAddTaskProps> = ({ onSubmit, onClose }) => {
+export const QuickAddTask: React.FC<QuickAddTaskProps> = ({
+  onSubmit,
+  onClose,
+  initialDeadline,
+}) => {
   const { t } = useTranslation()
   const { theme } = useTheme()
   const [entered, setEntered] = useState(false)
@@ -34,7 +39,7 @@ export const QuickAddTask: React.FC<QuickAddTaskProps> = ({ onSubmit, onClose })
   const [status, setStatus] = useState<Status>('Todo')
   const [priority, setPriority] = useState<Priority>('Medium')
   const [category, setCategory] = useState<Category>('Other')
-  const [deadline, setDeadline] = useState(todayDateKey())
+  const [deadline, setDeadline] = useState(initialDeadline ?? todayDateKey())
 
   useEffect(() => {
     const id = requestAnimationFrame(() => setEntered(true))

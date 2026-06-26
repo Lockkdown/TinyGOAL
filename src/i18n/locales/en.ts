@@ -4,6 +4,7 @@ export const en = {
     task: 'Task',
     statistic: 'Statistic',
     focus: 'Focus',
+    calendar: 'Calendar',
     switchView: 'Switch view',
   },
   lang: {
@@ -112,5 +113,21 @@ export const en = {
   chart: {
     today: 'Today',
     thisWeek: 'This wk',
+  },
+  calendar: {
+    today: 'Today',
+    more: '+{{n}} more',
+    prevMonth: 'Previous month',
+    nextMonth: 'Next month',
+    addTaskOnDate: 'Add task on {{date}}',
+    weekdays: {
+      mon: 'Mon',
+      tue: 'Tue',
+      wed: 'Wed',
+      thu: 'Thu',
+      fri: 'Fri',
+      sat: 'Sat',
+      sun: 'Sun',
+    },
   },
 }
