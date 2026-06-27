@@ -1,13 +1,122 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { ModalPortal } from '../components/shared/ModalPortal'
 import { useTheme } from '../hooks/useTheme'
 import type { CalendarViewProps, Task } from '../types'
 import { getCategoryChartColor, hexWithAlpha } from '../utils/chartColors'
-import { getCalendarMatrix, groupTasksByDeadline } from '../utils/helpers'
+import { formatDeadline, getCalendarMatrix, groupTasksByDeadline } from '../utils/helpers'
 
 const MAX_PILLS_PER_CELL = 3
 
 const WEEKDAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const
+
+type CalendarDayPanelProps = {
+  dateKey: string
+  tasks: Task[]
+  onClose: () => void
+  onOpenTask: (task: Task) => void
+  onAddTaskOnDate: (dateKey: string) => void
+}
+
+const CalendarDayPanel: React.FC<CalendarDayPanelProps> = ({
+  dateKey,
+  tasks,
+  onClose,
+  onOpenTask,
+  onAddTaskOnDate,
+}) => {
+  const { t } = useTranslation()
+  const { theme } = useTheme()
+  const [entered, setEntered] = useState(false)
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setEntered(true))
+    return () => cancelAnimationFrame(id)
+  }, [])
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [onClose])
+
+  const formattedDate = formatDeadline(dateKey)
+
+  return (
+    <ModalPortal>
+      <div
+        className={`fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm transition-opacity duration-200 motion-reduce:transition-none ${
+          entered ? 'opacity-100' : 'opacity-0'
+        }`}
+        onClick={onClose}
+      >
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="calendar-day-title"
+          onClick={(e) => e.stopPropagation()}
+          className={`flex max-h-[min(24rem,80vh)] w-full max-w-md flex-col overflow-hidden rounded-2xl bg-tk-surface shadow-2xl transition-opacity duration-200 ease-out motion-reduce:transition-none ${
+            entered ? 'opacity-100' : 'opacity-0'
+          }`}
+        >
+          <div className="flex items-center justify-between border-b border-tk-border px-4 py-3">
+            <h2 id="calendar-day-title" className="text-sm font-semibold text-tk-text-1">
+              {t('calendar.dayTasksTitle', { date: formattedDate })}
+            </h2>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label={t('a11y.close')}
+              className="rounded p-1 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700 dark:text-neutral-500 dark:hover:bg-neutral-800 dark:hover:text-neutral-300"
+            >
+              <span className="text-xl leading-none">&times;</span>
+            </button>
+          </div>
+          <ul className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-4">
+            {tasks.map((task) => {
+              const color = getCategoryChartColor(task.category, theme)
+              const isDone = task.status === 'Done'
+              return (
+                <li key={task.id}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onOpenTask(task)
+                      onClose()
+                    }}
+                    style={{
+                      backgroundColor: hexWithAlpha(color, 0.18),
+                      borderLeft: `3px solid ${color}`,
+                    }}
+                    className={`block w-full rounded px-3 py-2 text-left text-sm text-tk-text-1 transition-colors hover:brightness-95 dark:hover:brightness-110 motion-reduce:transition-none ${
+                      isDone ? 'line-through opacity-60' : ''
+                    }`}
+                  >
+                    {task.title}
+                  </button>
+                </li>
+              )
+            })}
+          </ul>
+          <div className="border-t border-tk-border-subtle p-4">
+            <button
+              type="button"
+              onClick={() => {
+                onAddTaskOnDate(dateKey)
+                onClose()
+              }}
+              className="w-full rounded-lg bg-neutral-800 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-neutral-700 dark:bg-neutral-600 dark:hover:bg-neutral-500 motion-reduce:transition-none"
+            >
+              {t('calendar.addTaskButton')}
+            </button>
+          </div>
+        </div>
+      </div>
+    </ModalPortal>
+  )
+}
 
 type CalendarCellProps = {
   cellKey: string
@@ -17,6 +126,7 @@ type CalendarCellProps = {
   tasks: Task[]
   onOpenTask: (task: Task) => void
   onAddTaskOnDate: (dateKey: string) => void
+  onShowDayTasks: (dateKey: string) => void
 }
 
 const CalendarCell: React.FC<CalendarCellProps> = ({
@@ -27,11 +137,14 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
   tasks,
   onOpenTask,
   onAddTaskOnDate,
+  onShowDayTasks,
 }) => {
   const { t } = useTranslation()
   const { theme } = useTheme()
 
-  const visible = tasks.slice(0, MAX_PILLS_PER_CELL)
+  const visibleCount =
+    tasks.length > MAX_PILLS_PER_CELL ? MAX_PILLS_PER_CELL - 1 : tasks.length
+  const visible = tasks.slice(0, visibleCount)
   const overflow = tasks.length - visible.length
 
   return (
@@ -60,36 +173,43 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
           {day}
         </span>
       </button>
-      <div className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-hidden">
-        {visible.map((task) => {
-          const color = getCategoryChartColor(task.category, theme)
-          const isDone = task.status === 'Done'
-          return (
-            <button
-              key={task.id}
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation()
-                onOpenTask(task)
-              }}
-              style={{
-                backgroundColor: hexWithAlpha(color, 0.18),
-                borderLeft: `3px solid ${color}`,
-              }}
-              className={`block w-full truncate rounded px-1.5 py-1 text-left text-xs text-tk-text-1 sm:text-sm ${
-                isDone ? 'line-through opacity-60' : ''
-              }`}
-              title={task.title}
-            >
-              {task.title}
-            </button>
-          )
-        })}
+      <div className="flex min-h-0 flex-1 flex-col">
+        <div className="min-h-0 flex-1 overflow-hidden">
+          <div className="flex flex-col gap-1">
+            {visible.map((task) => {
+              const color = getCategoryChartColor(task.category, theme)
+              const isDone = task.status === 'Done'
+              return (
+                <button
+                  key={task.id}
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onOpenTask(task)
+                  }}
+                  style={{
+                    backgroundColor: hexWithAlpha(color, 0.18),
+                    borderLeft: `3px solid ${color}`,
+                  }}
+                  className={`block w-full shrink-0 truncate rounded px-1.5 py-1 text-left text-xs leading-normal text-tk-text-1 ${
+                    isDone ? 'line-through opacity-60' : ''
+                  }`}
+                  title={task.title}
+                >
+                  {task.title}
+                </button>
+              )
+            })}
+          </div>
+        </div>
         {overflow > 0 && (
           <button
             type="button"
-            onClick={() => onAddTaskOnDate(cellKey)}
-            className="truncate text-left text-xs text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+            onClick={(e) => {
+              e.stopPropagation()
+              onShowDayTasks(cellKey)
+            }}
+            className="mt-1 shrink-0 truncate text-left text-xs leading-normal text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
           >
             {t('calendar.more', { n: overflow })}
           </button>
@@ -108,12 +228,18 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   const now = new Date()
   const [viewYear, setViewYear] = useState(now.getFullYear())
   const [viewMonth, setViewMonth] = useState(now.getMonth())
+  const [dayPanelDate, setDayPanelDate] = useState<string | null>(null)
 
   const weeks = useMemo(
     () => getCalendarMatrix(viewYear, viewMonth),
     [viewYear, viewMonth],
   )
   const byDate = useMemo(() => groupTasksByDeadline(tasks), [tasks])
+
+  const dayPanelTasks = useMemo(
+    () => (dayPanelDate ? (byDate.get(dayPanelDate) ?? []) : []),
+    [dayPanelDate, byDate],
+  )
 
   const monthTitle = useMemo(
     () =>
@@ -209,10 +335,20 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               tasks={byDate.get(cell.key) ?? []}
               onOpenTask={onOpenTask}
               onAddTaskOnDate={onAddTaskOnDate}
+              onShowDayTasks={setDayPanelDate}
             />
           ))}
         </div>
       </div>
+      {dayPanelDate && (
+        <CalendarDayPanel
+          dateKey={dayPanelDate}
+          tasks={dayPanelTasks}
+          onClose={() => setDayPanelDate(null)}
+          onOpenTask={onOpenTask}
+          onAddTaskOnDate={onAddTaskOnDate}
+        />
+      )}
     </div>
   )
 }

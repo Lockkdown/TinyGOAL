@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import CategoryBadge from '../shared/CategoryBadge'
 import PriorityIcon from '../shared/PriorityIcon'
 import type { TaskListItemProps } from '../../types'
-import { formatDeadline, isOverdue } from '../../utils/helpers'
+import { formatCompletedAt, formatDeadline, isOverdue } from '../../utils/helpers'
 
 const OVERDUE_CLASS = 'font-medium text-red-500 dark:text-red-400'
 const DEADLINE_CLASS = 'text-tk-text-2'
@@ -68,7 +68,11 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({
       <div
         className={`flex shrink-0 items-center gap-2 text-xs ${isDone ? 'opacity-75' : ''}`}
       >
-        <span className={deadlineClasses}>{formatDeadline(task.deadline)}</span>
+        <span className={isDone ? 'text-tk-text-2' : deadlineClasses}>
+          {isDone && task.completedAt
+            ? t('task.completedOn', { date: formatCompletedAt(task.completedAt) })
+            : formatDeadline(task.deadline)}
+        </span>
         <span className={META_MUTED_CLASS} aria-hidden="true">
           ·
         </span>
