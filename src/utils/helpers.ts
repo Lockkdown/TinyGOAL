@@ -57,6 +57,14 @@ export function formatDeadline(dateString: string): string {
   }).format(date)
 }
 
+export function formatCompletedAt(isoTimestamp: string): string {
+  const d = new Date(isoTimestamp)
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return formatDeadline(`${y}-${m}-${day}`)
+}
+
 export function generateId(): string {
   return crypto.randomUUID()
 }

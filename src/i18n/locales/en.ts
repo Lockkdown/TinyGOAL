@@ -60,6 +60,9 @@ export const en = {
   board: {
     empty: 'No tasks yet',
   },
+  task: {
+    completedOn: 'Completed: {{date}}',
+  },
   form: {
     newTask: 'New Task',
     createTask: 'Create task',
@@ -103,6 +106,7 @@ export const en = {
     statusChart: 'Tasks by status',
     priorityChart: 'Tasks by priority',
     completionChart: 'Recent completion curve',
+    completionChartSubtitle: 'Tasks marked Done each day (not by deadline)',
     day: 'Day',
     week: 'Week',
     focusTime: 'Focus time',
@@ -117,6 +121,8 @@ export const en = {
   calendar: {
     today: 'Today',
     more: '+{{n}} more',
+    dayTasksTitle: 'Tasks on {{date}}',
+    addTaskButton: 'Add task',
     prevMonth: 'Previous month',
     nextMonth: 'Next month',
     addTaskOnDate: 'Add task on {{date}}',

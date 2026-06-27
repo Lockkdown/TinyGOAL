@@ -62,6 +62,9 @@ export const vi = {
   board: {
     empty: 'Chưa có task',
   },
+  task: {
+    completedOn: 'Hoàn thành: {{date}}',
+  },
   form: {
     newTask: 'Task mới',
     createTask: 'Tạo task',
@@ -105,6 +108,7 @@ export const vi = {
     statusChart: 'Task theo trạng thái',
     priorityChart: 'Task theo ưu tiên',
     completionChart: 'Biểu đồ hoàn thành gần đây',
+    completionChartSubtitle: 'Số task chuyển sang Done mỗi ngày (không theo hạn)',
     day: 'Ngày',
     week: 'Tuần',
     focusTime: 'Thời gian tập trung',
@@ -119,6 +123,8 @@ export const vi = {
   calendar: {
     today: 'Hôm nay',
     more: '+{{n}} nữa',
+    dayTasksTitle: 'Task ngày {{date}}',
+    addTaskButton: 'Thêm task',
     prevMonth: 'Tháng trước',
     nextMonth: 'Tháng sau',
     addTaskOnDate: 'Thêm task ngày {{date}}',

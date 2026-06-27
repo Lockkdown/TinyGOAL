@@ -11,6 +11,18 @@ function withCompletedAt(prev: Task, nextStatus: Status): Pick<Task, 'completedA
   return { completedAt: prev.completedAt ?? null }
 }
 
+function backfillCompletedAt(tasks: Task[]): Task[] {
+  let changed = false
+  const next = tasks.map((t) => {
+    if (t.status === 'Done' && !t.completedAt) {
+      changed = true
+      return { ...t, completedAt: t.createdAt }
+    }
+    return t
+  })
+  return changed ? next : tasks
+}
+
 export function useTasks() {
   const [tasks, setTasks] = useLocalStorage<Task[]>('tinygoal-tasks', [])
   const tasksRef = useRef(tasks)
@@ -19,13 +31,25 @@ export function useTasks() {
     tasksRef.current = tasks
   }, [tasks])
 
+  useEffect(() => {
+    const backfilled = backfillCompletedAt(tasksRef.current)
+    if (backfilled !== tasksRef.current) {
+      tasksRef.current = backfilled
+      setTasks(backfilled)
+    }
+  }, [setTasks])
+
   const addTask = useCallback(
     (task: Omit<Task, 'id' | 'createdAt'>) => {
-      const newTask: Task = {
+      const base: Task = {
         ...task,
         id: generateId(),
         createdAt: new Date().toISOString(),
         completedAt: null,
+      }
+      const newTask: Task = {
+        ...base,
+        ...withCompletedAt({ ...base, status: 'Todo' }, task.status),
       }
       const next = [...tasksRef.current, newTask]
       tasksRef.current = next

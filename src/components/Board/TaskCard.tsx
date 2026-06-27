@@ -1,9 +1,10 @@
 import { useDraggable } from '@dnd-kit/core'
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import CategoryBadge from '../shared/CategoryBadge'
 import PriorityIcon from '../shared/PriorityIcon'
 import type { TaskCardProps } from '../../types'
-import { formatDeadline, isOverdue } from '../../utils/helpers'
+import { formatCompletedAt, formatDeadline, isOverdue } from '../../utils/helpers'
 
 const OVERDUE_CLASS = 'font-medium text-red-500 dark:text-red-400'
 const DEADLINE_CLASS = 'text-tk-text-2'
@@ -13,6 +14,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   onOpenTask,
   isOverlay = false,
 }) => {
+  const { t } = useTranslation()
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: task.id,
     disabled: isOverlay,
@@ -68,8 +70,10 @@ export const TaskCard: React.FC<TaskCardProps> = ({
             <PriorityIcon priority={task.priority} />
           </div>
         </div>
-        <p className={`text-xs ${deadlineClasses} ${isDone ? 'opacity-75' : ''}`}>
-          {formatDeadline(task.deadline)}
+        <p className={`text-xs ${isDone ? 'text-tk-text-2 opacity-75' : deadlineClasses}`}>
+          {isDone && task.completedAt
+            ? t('task.completedOn', { date: formatCompletedAt(task.completedAt) })
+            : formatDeadline(task.deadline)}
         </p>
       </div>
     </li>

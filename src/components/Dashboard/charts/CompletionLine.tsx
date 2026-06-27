@@ -51,8 +51,11 @@ export const CompletionLine: React.FC<CompletionLineProps> = ({ tasks }) => {
 
   return (
     <div className="rounded-lg border border-tk-border bg-tk-surface p-4 shadow-sm">
-      <div className="mb-2 flex items-center justify-between gap-4">
-        <h3 className="text-sm font-medium text-tk-text-2">{t('dashboard.completionChart')}</h3>
+      <div className="mb-2 flex items-start justify-between gap-4">
+        <div>
+          <h3 className="text-sm font-medium text-tk-text-2">{t('dashboard.completionChart')}</h3>
+          <p className="mt-0.5 text-xs text-tk-text-3">{t('dashboard.completionChartSubtitle')}</p>
+        </div>
         <div className="flex rounded-md border border-tk-border p-0.5 text-xs">
           <button
             type="button"
