@@ -142,14 +142,12 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
   const { t } = useTranslation()
   const { theme } = useTheme()
 
-  const visibleCount =
-    tasks.length > MAX_PILLS_PER_CELL ? MAX_PILLS_PER_CELL - 1 : tasks.length
-  const visible = tasks.slice(0, visibleCount)
+  const visible = tasks.slice(0, MAX_PILLS_PER_CELL)
   const overflow = tasks.length - visible.length
 
   return (
     <div
-      className={`flex h-full min-h-0 flex-col border border-tk-border p-1.5 sm:p-2 ${
+      className={`flex h-full min-h-0 flex-col border border-tk-border p-1 sm:p-1.5 ${
         inMonth
           ? 'bg-white dark:bg-tk-surface'
           : 'bg-neutral-100 dark:bg-neutral-900/50'
@@ -159,10 +157,10 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
         type="button"
         onClick={() => onAddTaskOnDate(cellKey)}
         aria-label={t('calendar.addTaskOnDate', { date: cellKey })}
-        className="mb-1.5 flex h-8 w-8 shrink-0 items-center justify-center self-start rounded-full text-sm font-medium transition-colors hover:bg-tk-surface-hover motion-reduce:transition-none"
+        className="mb-1 flex h-7 w-7 shrink-0 items-center justify-center self-start rounded-full text-xs font-medium transition-colors hover:bg-tk-surface-hover motion-reduce:transition-none"
       >
         <span
-          className={`inline-flex h-8 w-8 items-center justify-center rounded-full ${
+          className={`inline-flex h-7 w-7 items-center justify-center rounded-full text-xs ${
             isToday
               ? 'bg-tk-accent text-white'
               : inMonth
@@ -175,7 +173,7 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
       </button>
       <div className="flex min-h-0 flex-1 flex-col">
         <div className="min-h-0 flex-1 overflow-hidden">
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-0.5">
             {visible.map((task) => {
               const color = getCategoryChartColor(task.category, theme)
               const isDone = task.status === 'Done'
@@ -191,7 +189,7 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
                     backgroundColor: hexWithAlpha(color, 0.18),
                     borderLeft: `3px solid ${color}`,
                   }}
-                  className={`block w-full shrink-0 truncate rounded px-1.5 py-1 text-left text-xs leading-normal text-tk-text-1 ${
+                  className={`block min-h-[1.375rem] w-full shrink-0 truncate rounded px-1.5 py-0.5 text-left text-xs leading-snug text-tk-text-1 ${
                     isDone ? 'line-through opacity-60' : ''
                   }`}
                   title={task.title}
@@ -209,7 +207,7 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
               e.stopPropagation()
               onShowDayTasks(cellKey)
             }}
-            className="mt-1 shrink-0 truncate text-left text-xs leading-normal text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+            className="mt-0.5 shrink-0 truncate text-left text-[11px] leading-snug text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
           >
             {t('calendar.more', { n: overflow })}
           </button>
@@ -280,9 +278,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       id="calendar-panel"
       role="tabpanel"
       aria-labelledby="nav-calendar"
-      className="flex h-[calc(100vh)] w-full flex-col px-4 pb-4 pt-4 sm:px-6"
+      className="flex h-[calc(100vh)] w-full flex-col px-4 pb-3 pt-3 sm:px-6"
     >
-      <header className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-3">
+      <header className="mb-2 flex shrink-0 flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -318,13 +316,13 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           {WEEKDAY_KEYS.map((key) => (
             <div
               key={key}
-              className="px-1 py-2.5 text-center text-sm font-semibold text-neutral-900 dark:text-neutral-100"
+              className="px-1 py-2 text-center text-sm font-semibold text-neutral-900 dark:text-neutral-100"
             >
               {t(`calendar.weekdays.${key}`)}
             </div>
           ))}
         </div>
-        <div className="grid min-h-0 flex-1 grid-cols-7 grid-rows-6 bg-neutral-100 dark:bg-neutral-950">
+        <div className="grid min-h-0 flex-1 grid-cols-7 grid-rows-[repeat(6,minmax(7rem,1fr))] bg-neutral-100 dark:bg-neutral-950">
           {cells.map((cell) => (
             <CalendarCell
               key={cell.key}
