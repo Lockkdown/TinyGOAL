@@ -86,6 +86,16 @@ export function getRingColor(
   return theme === 'dark' ? palette.dark : palette.light
 }
 
+/** Focus bar chart — muted sky gradient, not full-width neon blocks */
+const FOCUS_BAR_COLORS: Record<AppTheme, { top: string; bottom: string; active: string }> = {
+  light: { top: '#38bdf8', bottom: '#0284c7', active: '#0ea5e9' },
+  dark: { top: '#7dd3fc', bottom: '#0284c7', active: '#38bdf8' },
+}
+
+export function getFocusBarColors(theme: AppTheme): { top: string; bottom: string; active: string } {
+  return FOCUS_BAR_COLORS[theme]
+}
+
 /** Recharts bar/line hover band — subtle, theme-aware (tránh vùng trắng mặc định) */
 export function getChartTooltipCursor(theme: AppTheme): { fill: string; radius?: number } {
   return {
